@@ -6,7 +6,8 @@ from contextlib import ExitStack
 os.environ['APP_SECRET']='integration-test-secret-not-for-production'
 os.environ['DATABASE_URL']='sqlite:///'+tempfile.mktemp(suffix='.db')
 from fastapi.testclient import TestClient
-from app.main import app,rooms,connections
+from app.main import app
+from app.state import rooms, connections
 ORIGIN={'origin':'http://localhost:8080'}
 
 def test_http_websocket_game_and_leave():

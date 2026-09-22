@@ -6,6 +6,119 @@ Vue 3 + FastAPI + MySQL + Docker Compose로 실행하는 5~10인 실시간 추�
 첨부 Stitch 디자인의 검정·금색 테마와 기사·암살자·문장 이미지를 반영했습니다.
 PC는 게임판과 채팅을 나란히, 모바일은 좌우로 넘기는 참가자 카드와 세로 채팅으로 구성했습니다.
 
+
+## 프로젝트 구조 한눈에 보기
+
+처음 프로젝트를 열었을 때는 아래 순서로 보면 됩니다.
+
+- **프론트 화면을 수정**하려면 `frontend/src/pages`, `frontend/src/components`부터 확인합니다.
+- **서버 통신 / WebSocket 동작을 수정**하려면 `frontend/src/composables/useAvalon.js`와 `backend/app/routers`를 확인합니다.
+- **게임 규칙을 수정**하려면 `backend/app/domain/game.py`를 확인합니다.
+- **DB / 환경변수 / 보안 설정을 수정**하려면 `backend/app/core`를 확인합니다.
+- `frontend/src/App.vue`와 `backend/app/main.py`는 가능한 한 **조립과 진입점 역할만** 담당하도록 구성했습니다.
+
+```text
+WebAvalonCourt/
+├─ compose.yaml                  # 전체 서비스(MySQL / FastAPI / Nginx) 실행
+├─ .env.example                 # 환경변수 예시
+├─ README.md                    # 프로젝트 실행 및 구조 설명
+├─ ROLE_ART.md                  # 역할 초상화 관련 설명
+├─ TEST_REPORT.md               # 테스트 / 검증 결과
+│
+├─ scripts/
+│  └─ init_env.py               # 최초 실행용 .env 비밀값 자동 생성
+│
+├─ frontend/                    # Vue 3 클라이언트
+│  ├─ Dockerfile
+│  ├─ nginx.conf                # 정적 파일 제공 + /api, /ws 리버스 프록시
+│  ├─ package.json
+│  ├─ vite.config.js
+│  ├─ public/
+│  │  └─ assets/                # 기사/문장/역할 이미지
+│  └─ src/
+│     ├─ main.js                # Vue 애플리케이션 시작점
+│     ├─ App.vue                # 최상위 페이지 조립 / 전역 이벤트 연결
+│     ├─ style.css              # 공통 스타일 / 반응형 레이아웃
+│     ├─ audio.js               # Web Audio 기반 효과음 / BGM 생성
+│     │
+│     ├─ pages/                 # 화면 단위 컴포넌트
+│     │  ├─ LobbyPage.vue       # 방 목록 / 방 생성 / 입장
+│     │  ├─ GamePage.vue        # 실제 게임 화면
+│     │  ├─ RulesPage.vue       # 게임 방법
+│     │  └─ RolesPage.vue       # 역할 도감
+│     │
+│     ├─ components/
+│     │  ├─ game/               # 게임 화면에서 사용하는 기능별 UI
+│     │  │  ├─ GameBoard.vue    # 원정대 구성 / 투표 / 행동 영역
+│     │  │  ├─ ChatPanel.vue    # 채팅 / 자동 스크롤
+│     │  │  ├─ IdentityPanel.vue# 자신의 역할 / 정보 표시
+│     │  │  ├─ LobbySettings.vue# 방 설정
+│     │  │  └─ GameResult.vue   # 종료 결과 / 역할 공개
+│     │  ├─ lobby/
+│     │  │  └─ RoomModal.vue    # 방 생성 / 입장 모달
+│     │  └─ layout/
+│     │     ├─ AppHeader.vue    # 공통 헤더
+│     │     ├─ ErrorBanner.vue  # 오류 표시
+│     │     └─ SoundControls.vue# 음량 / 음소거 UI
+│     │
+│     ├─ composables/           # 화면과 분리한 상태 / 로직
+│     │  ├─ useAvalon.js        # 로비 상태, REST, WebSocket, 재접속
+│     │  └─ useAudio.js         # BGM / 효과음 상태 및 장면 전환
+│     │
+│     ├─ services/
+│     │  └─ api.js              # fetch 공통 처리
+│     └─ constants/
+│        └─ game.js             # 역할명 / 게임 단계 등 정적 데이터
+│
+└─ backend/                     # FastAPI 서버
+   ├─ Dockerfile
+   ├─ requirements.txt
+   ├─ tests/
+   │  ├─ test_game.py           # 순수 게임 규칙 테스트
+   │  └─ test_api.py            # REST / WebSocket 통합 테스트
+   └─ app/
+      ├─ main.py                # ASGI 진입점: app 생성만 담당
+      ├─ factory.py             # FastAPI 앱 조립 / 라우터 등록
+      ├─ lifecycle.py           # 서버 시작 / 종료 시 처리
+      ├─ schemas.py             # API 요청/응답 스키마
+      ├─ state.py               # 방 / 연결 / lock 등 런타임 상태
+      │
+      ├─ core/                  # 인프라 공통 기능
+      │  ├─ config.py           # 환경변수 / 설정
+      │  ├─ database.py         # DB 연결 / 저장
+      │  └─ security.py         # 토큰 / 비밀번호 해시
+      │
+      ├─ domain/
+      │  └─ game.py             # 아발론 핵심 게임 규칙
+      │
+      ├─ routers/               # 외부 요청 진입점
+      │  ├─ http.py             # 세션 / 방 관리 REST API
+      │  └─ websocket.py        # 실시간 게임 WebSocket
+      │
+      └─ services/              # 여러 계층에서 공유하는 업무 로직
+         ├─ session_service.py   # 익명 세션 처리
+         ├─ room_service.py      # 방 조회 / 검증 / 저장 보조
+         └─ realtime.py          # 브로드캐스트 / 서버 시계 / 실시간 처리
+```
+
+### 요청이 처리되는 흐름
+
+```text
+브라우저
+  ↓
+Vue Page / Component
+  ↓
+useAvalon.js
+  ├─ REST 요청 ─────→ routers/http.py
+  └─ WebSocket ─────→ routers/websocket.py
+                         ↓
+                    services / domain
+                         ↓
+                  MySQL + 실시간 상태
+```
+
+게임 규칙 자체는 `domain/game.py`, 네트워크 입출력은 `routers`, 세션·방 관리 같은 공통 업무는 `services`로 분리했습니다. 따라서 새로운 기능을 추가할 때도 먼저 **UI → 통신 → 서비스 → 게임 규칙** 중 어느 영역인지 정한 뒤 해당 파일을 수정하면 됩니다.
+
 ## 빠른 실행 (Windows / macOS / Linux)
 
 Docker Engine + Compose 또는 Docker Desktop이 실행 중이어야 합니다. `.env` 생성에 Python 3이 필요합니다.
@@ -105,24 +218,15 @@ MySQL 볼륨 생성 후 `.env`의 DB 비밀번호만 변경하면 DB의 기존 �
 동일 세션의 다른 탭이 연결되면 기존 탭을 닫아 중복 행동을 방지합니다.
 게임 종료 뒤 방에서 나가 새 방을 만들면 다음 판을 시작할 수 있습니다.
 
-## 구조와 학습 순서
+## 코드 읽는 순서
 
-```text
-backend/app/game.py        순수 게임 규칙과 개인별 공개 정보
-backend/app/main.py        세션, HTTP API, WebSocket, 연결 확인, MySQL 저장
-backend/tests/             규칙 테스트와 HTTP/WebSocket 통합 테스트
-frontend/src/App.vue      Vue 반응형 상태, 로비/게임/설명 화면, 실시간 연결
-frontend/src/style.css    PC/태블릿/모바일 레이아웃 및 디자인 토큰
-frontend/nginx.conf       동일 출처 API·WebSocket 리버스 프록시
-compose.yaml              MySQL → FastAPI → Nginx 기동 및 상태 확인
-scripts/init_env.py        비밀값 자동 생성
-```
-
-1. `game.py`의 `action()`에서 단계별 입력과 전환을 먼저 읽어보세요.
-2. `view()`가 **사용자에게 허용된 정보만** 새 객체로 만드는 점을 확인하세요. 전체 역할을 내려보낸 후 CSS로 숨기는 방식이 아닙니다.
-3. `main.py`의 WebSocket에서 사용자 검증 → 직렬화 잠금 → 규칙 적용 → 저장 → 개인별 전송 흐름을 따라가세요.
-4. `App.vue`의 `send()`는 승패를 결정하지 않습니다. 서버가 보내준 상태를 화면에 반영합니다.
-5. 스타일 마지막 미디어 쿼리에서 PC의 병렬 패널이 모바일의 세로 배치로 바뀌는 것을 확인하세요.
+1. **전체 실행 흐름**은 루트 `compose.yaml`에서 시작합니다. MySQL → FastAPI → Nginx 순서로 어떤 서비스가 뜨는지 확인할 수 있습니다.
+2. **백엔드 진입점**은 `backend/app/main.py`이며, 실제 앱 조립은 `factory.py`에서 합니다.
+3. **게임 규칙**을 이해하려면 `backend/app/domain/game.py`의 `action()`과 `view()`를 먼저 보면 됩니다.
+4. **REST 요청**은 `routers/http.py`, **실시간 게임 행동**은 `routers/websocket.py`에서 시작합니다.
+5. 프론트에서는 `App.vue`보다 먼저 `pages/`를 보고, 세부 UI는 `components/`에서 찾는 것이 빠릅니다.
+6. 서버 통신과 재접속 로직은 `useAvalon.js`, 오디오는 `useAudio.js`, API 공통 호출은 `services/api.js`에 모여 있습니다.
+7. 기능 수정 후에는 `backend/tests/`와 `frontend/tests/`를 함께 확인하면 기존 동작이 깨졌는지 검증하기 쉽습니다.
 
 ## 저장과 운영 범위
 

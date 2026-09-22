@@ -1,6 +1,6 @@
 import time
 import pytest
-from app.game import Room, Player, RuleError, TEAMS, EVIL_COUNT, EVIL
+from app.domain.game import Room, Player, RuleError, TEAMS, EVIL_COUNT, EVIL
 
 
 def make(n=5,roles=None,lady=False):
