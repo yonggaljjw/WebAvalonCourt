@@ -138,3 +138,31 @@ def test_start_requires_readiness_host_and_balance():
     with pytest.raises(RuleError):r.start('p1')
     r.settings['roles']=['morgana','mordred']
     with pytest.raises(RuleError):r.start('p0')
+
+def test_completed_vote_history_is_anonymous():
+    # 5인 게임 생성
+    r = make()
+
+    # 원정대 제안
+    proposal(r)
+
+    # 3명 찬성, 2명 반대
+    for i, player in enumerate(r.players):
+        r.action(
+            player.id,
+            "vote",
+            {"approve": i < 3},
+        )
+
+    # 공개되는 마지막 투표 기록 확인
+    history = r.view("p0")["history"][-1]
+
+    # 누가 무엇을 투표했는지는 절대 포함되면 안 됩니다.
+    assert "votes" not in history
+
+    # 집계 결과만 공개되어야 합니다.
+    assert history["approve_count"] == 3
+    assert history["reject_count"] == 2
+
+    # 3:2이므로 승인
+    assert history["approved"] is True

@@ -258,14 +258,26 @@ class Room:
 
             # 모든 참가자가 투표한 뒤에만 결과를 계산합니다.
             if len(self.votes) == len(self.players):
+
+                # True(찬성)는 1, False(반대)는 0으로 계산되므로
+                # 전체 값을 더하면 찬성표 수를 구할 수 있습니다.
+                approve_count = sum(self.votes.values())
+
+                # 전체 투표 수에서 찬성표를 제외하면 반대표 수입니다.
+                reject_count = len(self.votes) - approve_count
+
                 # 과반수 초과만 승인되므로 동수는 부결됩니다.
-                approved = sum(self.votes.values()) > len(self.players) / 2
+                approved = approve_count > len(self.players) / 2
+
+                # 개인별 투표 결과는 공개 기록(history)에 저장하지 않습니다.
+                # 찬성/반대 인원수와 최종 승인 여부만 남깁니다.
                 self.history.append(
                     {
                         "type": "vote",
                         "round": self.round + 1,
                         "team": self.team[:],
-                        "votes": self.votes.copy(),
+                        "approve_count": approve_count,
+                        "reject_count": reject_count,
                         "approved": approved,
                     }
                 )

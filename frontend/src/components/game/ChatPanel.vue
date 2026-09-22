@@ -76,32 +76,27 @@ onMounted(() => nextTick(bottom));
 <template>
   <aside class="discourse panel">
     <div class="tabs">
-      <button :class="{ active: tab === 'chat' }" @click="tab = 'chat'">원탁의 대화</button>
-      <button :class="{ active: tab === 'history' }" @click="tab = 'history'">원정 기록</button>
+      <button :class="{ active: tab === 'chat' }" @click="tab = 'chat'">
+        원탁의 대화
+      </button>
+      <button :class="{ active: tab === 'history' }" @click="tab = 'history'">
+        원정 기록
+      </button>
     </div>
 
-    <div
-      v-if="tab === 'chat'"
-      ref="chatBox"
-      class="messages chat-messages"
-      role="log"
-      aria-label="원탁 채팅"
-      aria-live="polite"
-      @scroll="scrollChat"
-    >
+    <div v-if="tab === 'chat'" ref="chatBox" class="messages chat-messages" role="log" aria-label="원탁 채팅"
+      aria-live="polite" @scroll="scrollChat">
       <p class="system">
         정체는 숨기고, 의견은 나누세요.<br />모든 참가자에게 보이는 대화입니다.
       </p>
-      <article
-        v-for="(entry, index) in room.chat"
-        :key="entry.id || index"
-        class="chat-message"
-        :class="{ mine: isMine(entry) }"
-      >
+      <article v-for="(entry, index) in room.chat" :key="entry.id || index" class="chat-message"
+        :class="{ mine: isMine(entry) }">
         <b>{{ isMine(entry) ? "나" : entry.name }}</b>
         <div class="bubble-row">
           <p class="bubble">{{ entry.message }}</p>
-          <time :datetime="new Date(entry.at * 1000).toISOString()">{{ chatTime(entry) }}</time>
+          <time :datetime="new Date(entry.at * 1000).toISOString()">{{
+            chatTime(entry)
+          }}</time>
         </div>
       </article>
       <p v-if="!room.chat.length" class="muted">첫 대화를 시작해보세요.</p>
@@ -113,10 +108,21 @@ onMounted(() => nextTick(bottom));
         <p>실패 카드 {{ quest.fails }}장</p>
       </article>
       <article v-for="(history, index) in room.history" :key="index">
-        <b>{{ history.round }}차 원정 · {{ history.approved ? "승인" : "부결" }}</b>
+        <!-- 이번 원정대 제안의 최종 승인/부결 결과 -->
+        <b>
+          {{ history.round }}차 원정 ·
+          {{ history.approved ? "승인" : "부결" }}
+        </b>
+
+        <!-- 원정대장이 제안했던 원정대 구성 -->
         <p>팀: {{ history.team.map(playerName).join(", ") }}</p>
-        <p v-for="(vote, id) in history.votes" :key="id">
-          {{ playerName(id) }} · {{ vote ? "찬성" : "반대" }}
+
+        <!--
+          개인별 투표 결과는 공개하지 않습니다.
+          전체 찬성/반대 인원수만 표시합니다.
+        -->
+        <p>
+          찬성 {{ history.approve_count }}명 · 반대 {{ history.reject_count }}명
         </p>
       </article>
       <p v-if="!room.history.length" class="muted">아직 기록이 없습니다.</p>
@@ -126,12 +132,7 @@ onMounted(() => nextTick(bottom));
       새 메시지 ↓
     </button>
     <form class="chat-form" @submit.prevent="submitChat">
-      <input
-        v-model="message"
-        maxlength="300"
-        placeholder="원탁에 전할 말…"
-        aria-label="채팅 메시지"
-      />
+      <input v-model="message" maxlength="300" placeholder="원탁에 전할 말…" aria-label="채팅 메시지" />
       <button class="gold" :disabled="!message.trim()">전송</button>
     </form>
   </aside>
