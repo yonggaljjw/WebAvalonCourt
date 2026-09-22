@@ -1,3 +1,4 @@
+# FastAPI 서버 실행, MySQL 연결, 테스트에 필요한 Python 패키지 목록입니다.
 fastapi==0.115.12
 uvicorn[standard]==0.34.2
 SQLAlchemy==2.0.40

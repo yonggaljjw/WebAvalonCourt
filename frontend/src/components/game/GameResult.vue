@@ -1,7 +1,10 @@
+<!-- 학습용 주석: 게임 종료 후 승패와 전체 역할을 공개하는 결과 컴포넌트입니다. -->
 <script setup>
 import { roleImage, roleNames } from "../../constants/game.js";
 
+// props: 부모 컴포넌트가 이 컴포넌트에 내려주는 입력값입니다.
 defineProps({ room: { type: Object, required: true } });
+// emit: 자식이 직접 부모 상태를 바꾸지 않고 사용자 행동을 이벤트로 알립니다.
 const emit = defineEmits(["leave"]);
 </script>
 

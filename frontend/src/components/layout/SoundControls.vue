@@ -1,9 +1,12 @@
+<!-- 학습용 주석: BGM/효과음 활성화와 볼륨 값을 부모 상태에 연결하는 공통 UI입니다. -->
 <script setup>
+// props: 부모 컴포넌트가 이 컴포넌트에 내려주는 입력값입니다.
 defineProps({
   soundOn: { type: Boolean, required: true },
   musicVolume: { type: Number, required: true },
   effectVolume: { type: Number, required: true },
 });
+// emit: 자식이 직접 부모 상태를 바꾸지 않고 사용자 행동을 이벤트로 알립니다.
 const emit = defineEmits([
   "toggle",
   "update:musicVolume",

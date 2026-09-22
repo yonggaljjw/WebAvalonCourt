@@ -1,6 +1,9 @@
+// 학습용 주석: transitionCue()를 UI 없이 순수 상태 객체만으로 검증하는 Node.js 단위 테스트입니다.
+
 import test from "node:test";
 import assert from "node:assert/strict";
 import { transitionCue } from "../src/audio.js";
+// 각 테스트에서 필요한 속성만 덮어쓸 수 있도록 기본 게임 상태 생성 helper를 둡니다.
 const state = (extra = {}) => ({
   code: "ABC",
   phase: "proposal",

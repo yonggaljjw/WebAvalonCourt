@@ -1,3 +1,10 @@
+/*
+ * 학습용 주석
+ * 이 파일은 Vue 컴포넌트별 scoped CSS 대신 앱 전체가 공유하는 스타일을 모아둔 전역 CSS입니다.
+ * 위에서부터 기본 색/폰트 → 공통 버튼/패널 → 로비 → 게임 → 채팅 → 반응형 순서로 읽으면 편합니다.
+ * CSS는 위에서 아래로 같은 우선순위의 규칙이 덮어써질 수 있으므로 선언 순서도 의미가 있습니다.
+ */
+
 :root {
   color-scheme: dark;
   font-family: Georgia, "Noto Serif KR", "Malgun Gothic", serif;

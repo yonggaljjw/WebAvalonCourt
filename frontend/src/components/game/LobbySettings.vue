@@ -1,18 +1,23 @@
+<!-- 학습용 주석: 대기실에서 방장이 수정할 게임 설정 초안을 관리하는 컴포넌트입니다. -->
 <script setup>
 import { reactive, watch } from "vue";
 import { roleNames } from "../../constants/game.js";
 
+// props: 부모가 내려준 값을 script에서도 여러 번 참조하므로 변수로 받아 사용합니다.
 const props = defineProps({
   settings: { type: Object, required: true },
   host: { type: Boolean, required: true },
 });
+// emit: 자식이 직접 부모 상태를 바꾸지 않고 사용자 행동을 이벤트로 알립니다.
 const emit = defineEmits(["save"]);
 
+// props.settings를 직접 수정하지 않고 별도의 편집 초안(draft)을 둡니다.
 const draft = reactive({
   ...props.settings,
   roles: [...props.settings.roles],
 });
 
+// 서버/부모 설정이 바뀌면 로컬 편집 초안도 같은 값으로 동기화합니다.
 watch(
   () => props.settings,
   (value) => {

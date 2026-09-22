@@ -1,3 +1,4 @@
+<!-- 학습용 주석: 게임 규칙 페이지. 정적 규칙/원정대 표 데이터를 화면에 표시합니다. -->
 <script setup>
 import { questTeams, rules } from "../constants/game.js";
 </script>

@@ -10,6 +10,7 @@ from app.main import app
 from app.state import rooms, connections
 ORIGIN={'origin':'http://localhost:8080'}
 
+# HTTP로 세션/방을 만든 뒤 여러 WebSocket 참가자를 연결해 실제 사용자 흐름을 재현합니다.
 def test_http_websocket_game_and_leave():
     rooms.clear();connections.clear()
     with TestClient(app) as c:

@@ -1,5 +1,7 @@
+// 학습용 주석: Web Audio API의 Oscillator/Gain 노드로 외부 음원 없이 BGM과 효과음을 합성합니다.
 // 외부 음원/API 없이 직접 작곡한 패턴을 Web Audio로 합성합니다.
 // 브라우저의 자동재생 정책에 맞춰 사용자가 소리 켜기를 눌렀을 때만 시작합니다.
+// 이전/이후 게임 상태를 비교해 딱 한 번 재생할 효과음 종류를 결정하는 순수 함수입니다.
 export function transitionCue(before, after) {
   if (!before || before.code !== after.code) return null; // 최초 접속/복귀 시 과거 효과음 재생 금지
   if (before.phase !== "ended" && after.phase === "ended")
@@ -21,7 +23,9 @@ export function transitionCue(before, after) {
     return after.phase;
   return null;
 }
+// AudioContext와 음악 스케줄링을 캡슐화한 클래스입니다.
 export class AvalonAudio {
+  // 객체 생성 시에는 AudioContext를 만들지 않습니다. 사용자 클릭 전 자동재생 제한을 피하기 위해서입니다.
   constructor() {
     this.enabled = false;
     this.musicVolume = 0.25;
@@ -30,6 +34,7 @@ export class AvalonAudio {
     this.round = 1;
     this.nodes = new Set();
   }
+  // 사용자가 소리 켜기를 눌렀을 때 AudioContext와 Gain 노드를 준비합니다.
   async enable() {
     const Context = globalThis.AudioContext || globalThis.webkitAudioContext;
     if (!Context) throw Error("이 브라우저에서는 소리를 지원하지 않습니다.");
@@ -50,6 +55,7 @@ export class AvalonAudio {
     this.volumes(this.musicVolume, this.effectVolume);
     this.startMusic();
   }
+  // BGM과 효과음 볼륨을 0~1 범위로 보정해 GainNode에 반영합니다.
   volumes(music, effects) {
     this.musicVolume = Math.max(0, Math.min(1, Number(music) || 0));
     this.effectVolume = Math.max(0, Math.min(1, Number(effects) || 0));
@@ -87,6 +93,7 @@ export class AvalonAudio {
     o.start(start);
     o.stop(start + duration + 0.03);
   }
+  // 반복 스케줄러를 멈추고 현재 예약된 BGM 노드를 중단합니다.
   stopMusic() {
     clearInterval(this.timer);
     this.timer = null;
@@ -97,6 +104,7 @@ export class AvalonAudio {
         } catch {}
       }
   }
+  // 현재 게임 장면에 맞는 짧은 음 패턴을 조금씩 선예약하는 방식으로 BGM을 만듭니다.
   startMusic() {
     this.stopMusic();
     if (
@@ -131,6 +139,7 @@ export class AvalonAudio {
     schedule();
     this.timer = setInterval(schedule, 100);
   }
+  // Room의 phase/paused/round가 바뀌었을 때 BGM 분위기를 다시 선택합니다.
   scene(room) {
     const mode = room?.paused ? "paused" : room?.phase || "lobby",
       round = room?.round || 1;
@@ -140,6 +149,7 @@ export class AvalonAudio {
       this.startMusic();
     }
   }
+  // 특정 이벤트 이름에 대응하는 짧은 효과음 음계를 재생합니다.
   cue(name) {
     if (
       !this.enabled ||
@@ -176,6 +186,7 @@ export class AvalonAudio {
       ),
     );
   }
+  // 사운드를 끄되 AudioContext 객체는 재사용할 수 있게 유지합니다.
   disable() {
     this.enabled = false;
     this.stopMusic();
@@ -188,10 +199,12 @@ export class AvalonAudio {
       }
     }
   }
+  // 백그라운드 탭에서는 음악 예약을 멈추고 복귀 시 다시 시작합니다.
   visibility() {
     if (document.hidden) this.stopMusic();
     else this.startMusic();
   }
+  // 컴포넌트가 사라질 때 오디오 리소스를 완전히 정리합니다.
   close() {
     this.disable();
     this.ctx?.close().catch(() => {});

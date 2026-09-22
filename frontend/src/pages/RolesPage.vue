@@ -1,3 +1,4 @@
+<!-- 학습용 주석: 역할 도감 페이지. constants/game.js의 역할 정보를 반복 렌더링합니다. -->
 <script setup>
 import {
   roleDescriptions,

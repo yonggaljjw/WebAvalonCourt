@@ -1,9 +1,13 @@
+<!-- 학습용 주석: 게임 채팅/기록 패널. 채팅 자동 스크롤과 읽지 않은 메시지 상태를 관리합니다. -->
 <script setup>
 import { nextTick, onMounted, ref, watch } from "vue";
 
+// props: 부모가 내려준 값을 script에서도 여러 번 참조하므로 변수로 받아 사용합니다.
 const props = defineProps({ room: { type: Object, required: true } });
+// emit: 자식이 직접 부모 상태를 바꾸지 않고 사용자 행동을 이벤트로 알립니다.
 const emit = defineEmits(["send"]);
 
+// 채팅/게임 기록 중 현재 보고 있는 탭과 입력값을 로컬 상태로 관리합니다.
 const tab = ref("chat");
 const message = ref("");
 const chatBox = ref(null);
@@ -19,11 +23,13 @@ const chatTime = (entry) =>
 const playerName = (id) =>
   props.room.players.find((player) => player.id === id)?.name || "퇴장한 기사";
 
+// 채팅 컨테이너의 스크롤을 가장 아래로 이동합니다.
 function bottom() {
   if (chatBox.value) chatBox.value.scrollTop = chatBox.value.scrollHeight;
   unread.value = false;
 }
 
+// 사용자가 과거 메시지를 보는 중인지 판단해 자동 스크롤 여부를 결정합니다.
 function scrollChat() {
   const element = chatBox.value;
   if (
@@ -34,12 +40,14 @@ function scrollChat() {
   }
 }
 
+// 빈 문자열을 제외하고 상위 컴포넌트로 chat 행동을 전달합니다.
 function submitChat() {
   if (!message.value.trim()) return;
   emit("send", "chat", { message: message.value });
   message.value = "";
 }
 
+// 탭을 채팅으로 전환한 뒤 DOM 렌더링이 끝나면 최신 메시지 위치로 이동합니다.
 watch(tab, () => nextTick(bottom));
 watch(
   () => props.room,

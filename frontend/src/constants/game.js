@@ -1,3 +1,6 @@
+// 학습용 주석: 화면에 표시하는 역할명, 설명, 게임 단계, 규칙 등 변경이 드문 정적 데이터를 모았습니다.
+
+// 서버가 사용하는 영문 역할 코드를 사용자에게 보여줄 한글 이름으로 매핑합니다.
 export const roleNames = {
   merlin: "멀린",
   percival: "퍼시벌",
@@ -9,6 +12,7 @@ export const roleNames = {
   minion: "악의 하수인",
 };
 
+// 역할 도감과 역할 확인 패널에서 사용하는 설명 문구입니다.
 export const roleDescriptions = {
   merlin: "모드레드를 제외한 악 진영을 알고 있습니다. 정체를 숨긴 채 원정을 이끄세요.",
   percival: "멀린과 모르가나 후보를 알지만 둘을 구별할 수 없습니다.",
@@ -20,6 +24,7 @@ export const roleDescriptions = {
   minion: "악의 동료와 협력해 원정을 실패시키세요.",
 };
 
+// 서버의 phase 상태 코드를 화면용 문구로 변환합니다.
 export const phases = {
   lobby: "원정 준비",
   proposal: "원정대 구성 · 토론",
@@ -30,6 +35,7 @@ export const phases = {
   ended: "원정 종료",
 };
 
+// RulesPage에서 순서대로 렌더링할 규칙 설명 데이터입니다.
 export const rules = [
   [
     "역할 확인",
@@ -61,6 +67,7 @@ export const rules = [
   ],
 ];
 
+// 인원수별 선/악 구성과 1~5차 원정대 인원 표입니다.
 export const questTeams = [
   [5, "3 / 2", 2, 3, 2, 3, 3],
   [6, "4 / 2", 2, 3, 4, 3, 4],
@@ -70,6 +77,7 @@ export const questTeams = [
   [10, "6 / 4", 3, 4, 4, 5, 5],
 ];
 
+// 역할 코드에 해당하는 이미지가 있으면 사용하고, 없으면 기본 기사 이미지를 반환합니다.
 export function roleImage(role) {
   return Object.hasOwn(roleNames, role)
     ? `/assets/roles/${role}.png`

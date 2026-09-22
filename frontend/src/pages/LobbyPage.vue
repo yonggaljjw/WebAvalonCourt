@@ -1,12 +1,15 @@
+<!-- 학습용 주석: 로비 화면 페이지. 방 목록과 검색, 방 생성/입장 버튼을 보여주고 사용자 동작을 부모에게 emit합니다. -->
 <script setup>
 import { phases, roleNames } from "../constants/game.js";
 
+// props: 부모 컴포넌트가 이 컴포넌트에 내려주는 입력값입니다.
 defineProps({
   user: { type: Object, default: null },
   nickname: { type: String, required: true },
   filter: { type: String, required: true },
   rooms: { type: Array, required: true },
 });
+// emit: 자식이 직접 부모 상태를 바꾸지 않고 사용자 행동을 이벤트로 알립니다.
 const emit = defineEmits([
   "refresh",
   "create",
@@ -18,6 +21,7 @@ const emit = defineEmits([
 </script>
 
 <template>
+  <!-- 상단 소개 영역: 게임의 분위기와 핵심 특징을 보여줍니다. -->
   <section class="intro">
     <div>
       <p class="eyebrow">THE COUNCIL OF CAMELOT</p>
@@ -45,6 +49,7 @@ const emit = defineEmits([
         class="search"
         @input="emit('update:filter', $event.target.value)"
       />
+      <!-- rooms 배열을 v-for로 반복해 방 카드를 만듭니다. -->
       <div class="room-list">
         <article v-for="room in rooms" :key="room.code" class="room-card">
           <div class="room-mark">{{ room.locked ? "♜" : "⚔" }}</div>

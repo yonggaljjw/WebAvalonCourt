@@ -1,17 +1,22 @@
+<!-- 학습용 주석: 게임의 현재 단계에 맞는 행동 UI를 보여주는 핵심 컴포넌트입니다. -->
 <script setup>
 import { computed, ref, watch } from "vue";
 import { phases } from "../../constants/game.js";
 import GameResult from "./GameResult.vue";
 
+// props: 부모가 내려준 값을 script에서도 여러 번 참조하므로 변수로 받아 사용합니다.
 const props = defineProps({
   room: { type: Object, required: true },
   seconds: { type: Number, required: true },
   host: { type: Boolean, required: true },
   myPlayer: { type: Object, default: null },
 });
+// emit: 자식이 직접 부모 상태를 바꾸지 않고 사용자 행동을 이벤트로 알립니다.
 const emit = defineEmits(["send", "leave"]);
 
+// 대장이 원정대 구성 단계에서 선택 중인 플레이어 ID 목록입니다.
 const selected = ref([]);
+// 현재 내가 원정대장이고 proposal 단계인지 계산해 선택 가능 여부를 만듭니다.
 const canSelect = computed(
   () =>
     (props.room.phase === "proposal" &&
@@ -20,6 +25,7 @@ const canSelect = computed(
       props.room.me.role === "assassin") ||
     (props.room.phase === "lady" && props.room.lady === props.room.me.id),
 );
+// 현재 단계에서 내가 이미 투표/카드를 제출했는지 확인합니다.
 const submitted = computed(() =>
   props.room.submitted.includes(props.room.me.id),
 );
@@ -31,6 +37,7 @@ watch(
   () => (selected.value = []),
 );
 
+// 원정대 인원 수 제한을 지키면서 플레이어 선택/해제를 토글합니다.
 function select(id) {
   if (!canSelect.value) return;
   if (props.room.phase === "proposal") {

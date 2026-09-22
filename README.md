@@ -314,3 +314,39 @@ docker compose up --build -d
 프로젝트 폴더에서 `docker compose up --build -d`로 전체 변경을 반영합니다. 진행 중 게임이 없는 때 업데이트하세요.
 `docker compose down -v`는 사용하지 않습니다. 업데이트 후 Ctrl+F5로 새로고침합니다.
 역할 설명 페이지는 상단 **역할 도감** 메뉴이며 8종의 초상화·진영·능력 설명을 포함합니다.
+
+## 학습용 주석판 안내
+
+이 버전은 기능 추가보다 **코드 학습 편의성**에 초점을 맞춰 주석과 폴더별 문서를 보강했습니다.
+
+- Python/JavaScript/Vue/Docker/Nginx/Compose 주요 코드에는 한글로 **무엇을 하는지 + 왜 필요한지** 설명을 추가했습니다.
+- `backend/app/domain/game.py`처럼 압축되어 있던 핵심 로직은 동작을 바꾸지 않는 범위에서 여러 줄로 풀어 상태 전이를 따라가기 쉽게 정리했습니다.
+- 주요 소스 폴더마다 `README.md`가 있으며 해당 폴더의 책임, 핵심 개념, 파일 사이의 호출 관계를 설명합니다.
+- `package.json`/`package-lock.json`처럼 JSON 표준상 주석을 넣을 수 없는 파일은 파일 자체를 변경하지 않고 `frontend/README.md`에서 역할을 설명합니다.
+
+### 공부할 때 추천하는 방법
+
+처음부터 모든 파일을 읽기보다 다음 한 가지 흐름을 실제로 따라가 보세요.
+
+```text
+방 생성 버튼 클릭
+→ App.vue
+→ useAvalon.js create()
+→ services/api.js
+→ backend routers/http.py create_room()
+→ Room 생성
+→ database.py save_rooms()
+```
+
+그 다음에는 실시간 투표 하나를 따라가면 WebSocket 구조가 보입니다.
+
+```text
+GameBoard.vue에서 투표
+→ emit("send", ...)
+→ useAvalon.js send()
+→ routers/websocket.py
+→ Room.action(..., "vote", ...)
+→ broadcast()
+→ useAvalon.js socket.onmessage
+→ Vue 화면 자동 갱신
+```

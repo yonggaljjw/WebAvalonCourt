@@ -1,18 +1,27 @@
+"""아발론 도메인 규칙 단위 테스트.
+
+FastAPI나 DB 없이 Room/Player만 만들어 게임 규칙이 원하는 상태 전이를 만드는지 검증합니다.
+테스트 이름 자체를 '요구사항 문장'처럼 읽으면 구현 규칙을 이해하기 쉽습니다.
+"""
+
 import time
 import pytest
 from app.domain.game import Room, Player, RuleError, TEAMS, EVIL_COUNT, EVIL
 
 
+# 반복되는 테스트용 방/플레이어 생성을 줄이는 fixture 성격의 helper입니다.
 def make(n=5,roles=None,lady=False):
     r=Room('TEST','테스트','p0',{'capacity':10,'roles':roles or [],'lady':lady,'discussion_seconds':180,'vote_seconds':60,'reconnect_seconds':30})
     r.players=[Player(f'p{i}',f'기사{i}',ready=True,connected=True) for i in range(n)]
     r.start('p0');return r
 
+# 현재 라운드에 필요한 인원만큼 앞쪽 플레이어를 골라 팀 제안을 실행합니다.
 def proposal(r):
     team=[p.id for p in r.players[:TEAMS[len(r.players)][r.round]]]
     r.action(r.players[r.leader].id,'propose',{'team':team})
     return team
 
+# 모든 참가자가 같은 방향으로 투표하는 반복 코드를 helper로 묶었습니다.
 def vote(r,yes=True):
     for p in r.players:r.action(p.id,'vote',{'approve':yes})
 

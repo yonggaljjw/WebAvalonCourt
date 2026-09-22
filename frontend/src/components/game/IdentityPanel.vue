@@ -1,3 +1,4 @@
+<!-- 학습용 주석: 현재 플레이어의 역할과 본인만 알 수 있는 정보를 표시합니다. -->
 <script setup>
 import { ref } from "vue";
 import {
@@ -6,7 +7,9 @@ import {
   roleNames,
 } from "../../constants/game.js";
 
+// props: 부모 컴포넌트가 이 컴포넌트에 내려주는 입력값입니다.
 defineProps({ room: { type: Object, required: true } });
+// 역할 정보는 기본적으로 가리고 사용자가 직접 눌렀을 때만 보여줍니다.
 const reveal = ref(false);
 </script>
 

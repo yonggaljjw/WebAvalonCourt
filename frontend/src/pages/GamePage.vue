@@ -1,9 +1,11 @@
+<!-- 학습용 주석: 게임 화면 페이지. 게임 보드, 역할 정보, 설정, 채팅 컴포넌트를 배치하는 조립 역할을 합니다. -->
 <script setup>
 import ChatPanel from "../components/game/ChatPanel.vue";
 import GameBoard from "../components/game/GameBoard.vue";
 import IdentityPanel from "../components/game/IdentityPanel.vue";
 import LobbySettings from "../components/game/LobbySettings.vue";
 
+// props: 부모 컴포넌트가 이 컴포넌트에 내려주는 입력값입니다.
 defineProps({
   room: { type: Object, default: null },
   connection: { type: String, required: true },
@@ -12,6 +14,7 @@ defineProps({
   myPlayer: { type: Object, default: null },
   settings: { type: Object, required: true },
 });
+// emit: 자식이 직접 부모 상태를 바꾸지 않고 사용자 행동을 이벤트로 알립니다.
 const emit = defineEmits([
   "back",
   "copy",
@@ -44,6 +47,7 @@ const emit = defineEmits([
       {{ room.settings.reconnect_seconds }}초 내 복귀하지 않으면 무효 종료됩니다.
     </div>
 
+    <!-- 왼쪽은 게임 진행, 오른쪽은 채팅으로 나누는 큰 레이아웃입니다. -->
     <div class="game-layout">
       <section class="play-column">
         <GameBoard

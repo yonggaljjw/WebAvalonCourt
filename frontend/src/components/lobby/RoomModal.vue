@@ -1,4 +1,6 @@
+<!-- 학습용 주석: 방 생성과 초대 코드 입장을 하나의 모달 폼으로 처리합니다. -->
 <script setup>
+// props: 부모 컴포넌트가 이 컴포넌트에 내려주는 입력값입니다.
 defineProps({
   showCreate: { type: Boolean, required: true },
   joinCode: { type: String, required: true },
@@ -9,6 +11,7 @@ defineProps({
   busy: { type: Boolean, required: true },
   error: { type: String, default: "" },
 });
+// emit: 자식이 직접 부모 상태를 바꾸지 않고 사용자 행동을 이벤트로 알립니다.
 const emit = defineEmits([
   "close",
   "submit",
@@ -20,6 +23,7 @@ const emit = defineEmits([
 </script>
 
 <template>
+  <!-- showCreate 값 하나로 방 생성 폼과 방 입장 폼을 전환합니다. -->
   <div
     v-if="showCreate || joinCode"
     class="modal-backdrop"
