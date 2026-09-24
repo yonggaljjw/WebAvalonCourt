@@ -60,6 +60,21 @@ services:
       backend:
         condition: service_healthy
 
+  # cloudflared:
+  #   image: cloudflare/cloudflared:latest
+  #   restart: unless-stopped
+
+  #   # Cloudflare와 Tunnel 연결을 시작합니다.
+  #   command: tunnel --no-autoupdate run
+
+  #   environment:
+  #     # Cloudflare Dashboard에서 발급받은 Tunnel Token
+  #     TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:?Missing CLOUDFLARE_TUNNEL_TOKEN}
+
+  #   # web이 생성된 뒤 cloudflared를 실행합니다.
+  #   depends_on:
+  #     - web
+
 # Docker가 관리하는 MySQL 영속 볼륨을 선언합니다.
 volumes:
   mysql_data:
