@@ -11,7 +11,8 @@
 | `composables/` | UI와 분리한 상태 및 로직 |
 | `services/` | 백엔드 HTTP API 호출 |
 | `constants/` | 역할명, 단계명, 규칙 등 바뀌지 않는 데이터 |
-| `audio.js` | Web Audio API로 BGM/효과음을 직접 합성 |
+| `audio.js` | 파일 BGM·효과음 재생, 크로스페이드와 합성 대체음 |
+| `presentation.js` | 공개 게임 상태로부터 이벤트 배너를 선택 |
 | `style.css` | 프로젝트 전체 공통 스타일 |
 
 `App.vue`가 너무 커지지 않도록 **보여주는 일은 pages/components, 동작은 composables/services**에 배치한 구조입니다.

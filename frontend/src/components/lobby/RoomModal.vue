@@ -1,7 +1,8 @@
 <!-- 학습용 주석: 방 생성과 초대 코드 입장을 하나의 모달 폼으로 처리합니다. -->
 <script setup>
+import { computed, nextTick, onUnmounted, ref, watch } from "vue";
 // props: 부모 컴포넌트가 이 컴포넌트에 내려주는 입력값입니다.
-defineProps({
+const props = defineProps({
   showCreate: { type: Boolean, required: true },
   joinCode: { type: String, required: true },
   user: { type: Object, default: null },
@@ -20,13 +21,56 @@ const emit = defineEmits([
   "update:joinCode",
   "update:password",
 ]);
+
+const dialog = ref(null);
+const isOpen = computed(() => Boolean(props.showCreate || props.joinCode));
+let previousFocus;
+let previousOverflow;
+function restore() {
+  if (previousOverflow !== undefined)
+    document.body.style.overflow = previousOverflow;
+  previousFocus?.focus?.();
+  previousOverflow = undefined;
+}
+watch(isOpen, async (open) => {
+  if (!open) {
+    restore();
+    return;
+  }
+  previousFocus = document.activeElement;
+  previousOverflow = document.body.style.overflow;
+  document.body.style.overflow = "hidden";
+  await nextTick();
+  dialog.value?.querySelector("input, select")?.focus();
+});
+function trapFocus(event) {
+  if (event.key !== "Tab") return;
+  const items = [
+    ...dialog.value.querySelectorAll(
+      "button:not(:disabled),input:not(:disabled),select:not(:disabled)",
+    ),
+  ];
+  if (!items.length) return;
+  const first = items[0],
+    last = items.at(-1);
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+}
+onUnmounted(restore);
 </script>
 
 <template>
   <!-- showCreate 값 하나로 방 생성 폼과 방 입장 폼을 전환합니다. -->
   <div
     v-if="showCreate || joinCode"
+    ref="dialog"
     class="modal-backdrop"
+    @keydown="trapFocus"
     role="dialog"
     aria-modal="true"
     :aria-label="showCreate ? '원탁 만들기' : '원탁 참여'"
@@ -34,7 +78,12 @@ const emit = defineEmits([
     @keydown.esc="emit('close')"
   >
     <form class="modal panel" @submit.prevent="emit('submit')">
-      <button type="button" class="close" aria-label="닫기" @click="emit('close')">
+      <button
+        type="button"
+        class="close"
+        aria-label="닫기"
+        @click="emit('close')"
+      >
         ×
       </button>
       <p class="eyebrow">JOIN THE COUNCIL</p>

@@ -5,3 +5,7 @@
 - `SoundControls.vue`: 소리 켜기/끄기와 볼륨 조절
 
 게임 규칙을 모르더라도 재사용할 수 있는 UI를 이곳에 둡니다. 기능별 컴포넌트와 레이아웃 컴포넌트를 나누면 파일을 찾기 쉽습니다.
+
+## 소리 설정의 연결
+
+SoundControls는 props로 음량·활성 상태·오디오 안내를 받고 toggle/volume-change 이벤트를 올립니다. 실제 재생은 useAudio와 audio.js가 처리합니다. 펼친 설정 패널은 화면 공간을 차지하고 Escape로 닫을 수 있습니다. 출처 링크는 public/audio/CREDITS.txt를 엽니다.

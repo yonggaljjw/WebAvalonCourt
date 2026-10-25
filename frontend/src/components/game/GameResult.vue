@@ -1,5 +1,6 @@
 <!-- 학습용 주석: 게임 종료 후 승패와 전체 역할을 공개하는 결과 컴포넌트입니다. -->
 <script setup>
+import RolePortrait from "./RolePortrait.vue";
 import { roleImage, roleNames } from "../../constants/game.js";
 
 // props: 부모 컴포넌트가 이 컴포넌트에 내려주는 입력값입니다.
@@ -9,26 +10,40 @@ const emit = defineEmits(["leave"]);
 </script>
 
 <template>
-  <div class="result" :class="room.winner">
-    <p class="eyebrow">THE FINAL VERDICT</p>
-    <h1>
-      {{
-        room.winner === "aborted"
-          ? "원정 무효 종료"
-          : room.winner === "good"
-            ? "아서의 기사들이 승리했습니다"
-            : "어둠이 아발론을 삼켰습니다"
-      }}
-    </h1>
-    <p>{{ room.reason }}</p>
+  <div v-if="room.phase === 'ended'" class="result" :class="room.winner">
+    <div class="result-verdict">
+      <img
+        class="result-emblem"
+        :src="
+          room.winner === 'evil'
+            ? '/assets/remaster/tokens/quest-failure.webp'
+            : '/assets/remaster/emblems/royal-crest.webp'
+        "
+        alt=""
+        width="512"
+        height="512"
+      />
+      <p class="eyebrow">THE FINAL VERDICT</p>
+      <h1>
+        {{
+          room.winner === "aborted"
+            ? "원정 무효 종료"
+            : room.winner === "good"
+              ? "아서의 기사들이 승리했습니다"
+              : "어둠이 아발론을 삼켰습니다"
+        }}
+      </h1>
+      <p>{{ room.reason }}</p>
+    </div>
     <div class="result-roles">
-      <article v-for="player in room.players" :key="player.id" class="result-role">
-        <img
-          :src="roleImage(player.role)"
-          :alt="roleNames[player.role] + ' 역할 초상화'"
-          width="1024"
-          height="1536"
-          loading="lazy"
+      <article
+        v-for="player in room.players"
+        :key="player.id"
+        class="result-role"
+      >
+        <RolePortrait
+          :role="player.role"
+          sizes="(max-width: 767px) 42vw, 150px"
         />
         <div>
           <strong>{{ player.name }}</strong>

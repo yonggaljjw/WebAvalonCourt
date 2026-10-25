@@ -1,5 +1,6 @@
 <!-- 학습용 주석: 게임 화면 페이지. 게임 보드, 역할 정보, 설정, 채팅 컴포넌트를 배치하는 조립 역할을 합니다. -->
 <script setup>
+import EventOverlay from "../components/game/EventOverlay.vue";
 import ChatPanel from "../components/game/ChatPanel.vue";
 import GameBoard from "../components/game/GameBoard.vue";
 import IdentityPanel from "../components/game/IdentityPanel.vue";
@@ -15,13 +16,7 @@ defineProps({
   settings: { type: Object, required: true },
 });
 // emit: 자식이 직접 부모 상태를 바꾸지 않고 사용자 행동을 이벤트로 알립니다.
-const emit = defineEmits([
-  "back",
-  "copy",
-  "leave",
-  "send",
-  "save-settings",
-]);
+const emit = defineEmits(["back", "copy", "leave", "send", "save-settings"]);
 </script>
 
 <template>
@@ -30,10 +25,16 @@ const emit = defineEmits([
     <button @click="emit('back')">로비로 돌아가기</button>
   </div>
 
-  <template v-else>
+  <section v-else class="game-scene" :class="`scene-${room.phase}`">
     <section class="room-heading">
       <div>
-        <p class="eyebrow">{{ room.code }} · {{ connection }}</p>
+        <p class="eyebrow">
+          <span
+            class="connection-dot"
+            :class="{ live: connection === '실시간 연결' }"
+          ></span>
+          {{ room.code }} · {{ connection }}
+        </p>
         <h1>{{ room.title }}</h1>
       </div>
       <div>
@@ -42,9 +43,10 @@ const emit = defineEmits([
       </div>
     </section>
 
-    <div v-if="room.paused" class="notice">
+    <div v-if="room.paused" class="notice" role="status">
       재접속 확인 중 · 모든 진행을 일시 정지했습니다.
-      {{ room.settings.reconnect_seconds }}초 내 복귀하지 않으면 무효 종료됩니다.
+      {{ room.settings.reconnect_seconds }}초 내 복귀하지 않으면 무효
+      종료됩니다.
     </div>
 
     <!-- 왼쪽은 게임 진행, 오른쪽은 채팅으로 나누는 큰 레이아웃입니다. -->
@@ -58,7 +60,7 @@ const emit = defineEmits([
           @send="(action, data) => emit('send', action, data)"
           @leave="emit('leave')"
         />
-        <IdentityPanel :room="room" />
+        <IdentityPanel :key="room.code" :room="room" />
         <LobbySettings
           v-if="room.phase === 'lobby'"
           :settings="settings"
@@ -67,7 +69,11 @@ const emit = defineEmits([
         />
       </section>
 
-      <ChatPanel :room="room" @send="(action, data) => emit('send', action, data)" />
+      <ChatPanel
+        :room="room"
+        @send="(action, data) => emit('send', action, data)"
+      />
     </div>
-  </template>
+    <EventOverlay :room="room" :connection="connection" />
+  </section>
 </template>

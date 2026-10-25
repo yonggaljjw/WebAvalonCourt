@@ -1,10 +1,7 @@
 <!-- 학습용 주석: 역할 도감 페이지. constants/game.js의 역할 정보를 반복 렌더링합니다. -->
 <script setup>
-import {
-  roleDescriptions,
-  roleImage,
-  roleNames,
-} from "../constants/game.js";
+import RolePortrait from "../components/game/RolePortrait.vue";
+import { roleDescriptions, roleImage, roleNames } from "../constants/game.js";
 </script>
 
 <template>
@@ -15,17 +12,14 @@ import {
   </section>
   <div class="roles-grid">
     <article v-for="(name, key) in roleNames" :key="key" class="role-card">
-      <img
-        :src="roleImage(key)"
-        :alt="name + ' 역할 초상화'"
-        width="1024"
-        height="1536"
-        loading="lazy"
-        decoding="async"
-      />
+      <RolePortrait :role="key" />
       <div>
         <span class="eyebrow">
-          {{ ["merlin", "percival", "servant"].includes(key) ? "ARTHUR · 선 진영" : "MORDRED · 악 진영" }}
+          {{
+            ["merlin", "percival", "servant"].includes(key)
+              ? "ARTHUR · 선 진영"
+              : "MORDRED · 악 진영"
+          }}
         </span>
         <h2>{{ name }}</h2>
         <p>{{ roleDescriptions[key] }}</p>

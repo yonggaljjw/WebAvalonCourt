@@ -1,5 +1,5 @@
-// 학습용 주석: Web Audio API의 Oscillator/Gain 노드로 외부 음원 없이 BGM과 효과음을 합성합니다.
-// 외부 음원/API 없이 직접 작곡한 패턴을 Web Audio로 합성합니다.
+// 실제 음원 파일을 우선 재생하고, 파일을 읽지 못했을 때 기존 합성음을 사용합니다.
+// SynthAudio는 외부 리소스 실패 시 사용하는 독립적인 대체음 엔진입니다.
 // 브라우저의 자동재생 정책에 맞춰 사용자가 소리 켜기를 눌렀을 때만 시작합니다.
 // 이전/이후 게임 상태를 비교해 딱 한 번 재생할 효과음 종류를 결정하는 순수 함수입니다.
 export function transitionCue(before, after) {
@@ -24,7 +24,7 @@ export function transitionCue(before, after) {
   return null;
 }
 // AudioContext와 음악 스케줄링을 캡슐화한 클래스입니다.
-export class AvalonAudio {
+class SynthAudio {
   // 객체 생성 시에는 AudioContext를 만들지 않습니다. 사용자 클릭 전 자동재생 제한을 피하기 위해서입니다.
   constructor() {
     this.enabled = false;
@@ -208,5 +208,309 @@ export class AvalonAudio {
   close() {
     this.disable();
     this.ctx?.close().catch(() => {});
+  }
+}
+
+// All paths below refer to bundled, verified files; no streaming dependency.
+export const BGM = {
+  lobby: "camelot",
+  proposal: "council",
+  lady: "council",
+  vote: "suspicion",
+  quest: "suspicion",
+  assassination: "last-shadow",
+};
+export function musicFor(room) {
+  if (room?.paused) return null;
+  if (room?.phase === "ended")
+    return { good: "dawn", evil: "fallen-crown" }[room.winner] || null;
+  return BGM[room?.phase || "lobby"] || "camelot";
+}
+export const SFX = {
+  click: "click",
+  proposal: "start",
+  vote: "seal",
+  quest: "approved",
+  lady: "reveal",
+  assassination: "blade",
+  success: "success",
+  failure: "failure",
+  reject: "reject",
+  victory: "success",
+  defeat: "failure",
+  abort: "neutral",
+  pause: "neutral",
+  resume: "ready",
+};
+export class AvalonAudio extends SynthAudio {
+  constructor() {
+    super();
+    this.cache = new Map();
+    this.pending = new Map();
+    this.failed = new Set();
+    this.tracks = new Set();
+    this.voices = new Set();
+    this.lastCue = new Map();
+    this.generation = 0;
+    this.selected = "camelot";
+    this.closed = false;
+    this.onWarning = () => {};
+  }
+  async load(path) {
+    if (this.cache.has(path)) return this.cache.get(path);
+    if (this.failed.has(path)) throw Error("Unavailable audio");
+    if (this.pending.has(path)) return this.pending.get(path);
+    const task = (async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env?.BASE_URL || "/"}audio/${path}`,
+          { signal: this.abort.signal },
+        );
+        if (!response.ok) throw Error(`HTTP ${response.status}`);
+        const buffer = await this.ctx.decodeAudioData(
+          await response.arrayBuffer(),
+        );
+        if (this.closed) throw Error("Closed");
+        this.cache.set(path, buffer);
+        const music = [...this.cache.keys()].filter((x) =>
+          x.startsWith("bgm/"),
+        );
+        if (music.length > 2) this.cache.delete(music[0]);
+        return buffer;
+      } catch (e) {
+        if (!this.closed) this.failed.add(path);
+        throw e;
+      } finally {
+        this.pending.delete(path);
+      }
+    })();
+    this.pending.set(path, task);
+    return task;
+  }
+  async enable() {
+    if (!this.abort) this.abort = new AbortController();
+    await super.enable();
+    if (!this.duck) {
+      this.duck = this.ctx.createGain();
+      this.music.disconnect();
+      this.music.connect(this.duck);
+      this.duck.connect(this.master);
+    }
+  }
+  stopMusic() {
+    this.generation = (this.generation || 0) + 1;
+    super.stopMusic();
+    for (const track of this.tracks || []) {
+      try {
+        track.source.stop();
+        track.source.disconnect();
+        track.gain.disconnect();
+      } catch {}
+    }
+    this.tracks?.clear();
+    this.currentTrack = null;
+    this.active = null;
+  }
+  async startMusic() {
+    if (
+      !this.enabled ||
+      !this.ctx ||
+      this.closed ||
+      document.hidden ||
+      !this.selected
+    ) {
+      this.stopMusic();
+      return;
+    }
+    if (this.active === this.selected) return;
+    const token = ++this.generation,
+      selected = this.selected;
+    try {
+      const buffer = await this.load(`bgm/${selected}.ogg`);
+      if (token !== this.generation || !this.enabled || document.hidden) return;
+      // Stop a possible synth fallback before switching to a decoded music file.
+      clearInterval(this.timer);
+      this.timer = null;
+      for (const n of this.nodes)
+        if (n.bus === this.music) {
+          try {
+            n.o.stop();
+          } catch {}
+        }
+      const now = this.ctx.currentTime,
+        fade = 1;
+      // A rapid third switch must not keep extending a retired source's stop time.
+      // Retain only the current outgoing track; crossfades use at most two sources.
+      for (const retired of [...this.tracks]) {
+        if (retired !== this.currentTrack) {
+          try {
+            retired.source.stop();
+          } catch {}
+          this.tracks.delete(retired);
+        }
+      }
+      for (const old of this.tracks) {
+        old.gain.gain.cancelAndHoldAtTime(now);
+        old.gain.gain.linearRampToValueAtTime(0, now + fade);
+        try {
+          old.source.stop(now + fade);
+        } catch {}
+      }
+      const source = this.ctx.createBufferSource(),
+        gain = this.ctx.createGain();
+      source.buffer = buffer;
+      source.loop = !["dawn", "fallen-crown"].includes(selected);
+      source.connect(gain);
+      gain.connect(this.music);
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(1, now + fade);
+      const track = { source, gain };
+      this.tracks.add(track);
+      this.currentTrack = track;
+      this.active = selected;
+      source.onended = () => {
+        source.disconnect();
+        gain.disconnect();
+        this.tracks.delete(track);
+      };
+      source.start();
+    } catch (e) {
+      if (token !== this.generation || this.closed) return;
+      this.onWarning("음악 파일을 불러오지 못해 기본 합성음으로 재생합니다.");
+      if (this.mode === "ended") {
+        this.stopMusic();
+        super.cue(selected === "dawn" ? "victory" : "defeat");
+      } else {
+        super.startMusic();
+      }
+      this.active = selected;
+    }
+  }
+  scene(room) {
+    const selected = musicFor(room);
+    this.mode = room?.paused ? "paused" : room?.phase || "lobby";
+    this.round = room?.round || 1;
+    const code = room?.code || null;
+    if (code !== this.roomCode) {
+      this.roomCode = code;
+      this.silenceEffects();
+    }
+    this.selected = selected;
+    if (room?.paused) this.silenceEffects();
+    this.startMusic();
+  }
+  async cue(name) {
+    if (
+      !this.enabled ||
+      this.closed ||
+      document.hidden ||
+      this.ctx?.state !== "running"
+    )
+      return;
+    // Result music already carries the fanfare; never double it with an SFX.
+    if (["victory", "defeat"].includes(name)) return;
+    const id = SFX[name];
+    if (!id) return;
+    const now = performance.now();
+    if (now - (this.lastCue.get(id) ?? -Infinity) < 100) return;
+    this.lastCue.set(id, now);
+    const generation = this.effectGeneration || 0;
+    try {
+      const buffer = await this.load(`sfx/${id}.wav`);
+      if (
+        !this.enabled ||
+        this.closed ||
+        document.hidden ||
+        generation !== (this.effectGeneration || 0)
+      )
+        return;
+      const priority = name === "click" ? 0 : 1;
+      if (this.voices.size >= 6) {
+        const victim = [...this.voices].find((x) => x.priority <= priority);
+        if (!victim) return;
+        clearTimeout(victim.timer);
+        victim.source.stop();
+        this.voices.delete(victim);
+      }
+      const source = this.ctx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(this.effects);
+      if (priority && this.duck) {
+        const t = this.ctx.currentTime;
+        this.duck.gain.cancelAndHoldAtTime(t);
+        this.duck.gain.setTargetAtTime(0.6, t, 0.04);
+        clearTimeout(this.duckTimer);
+        this.duckTimer = setTimeout(() => {
+          if (!this.closed)
+            this.duck.gain.setTargetAtTime(1, this.ctx.currentTime, 0.25);
+        }, buffer.duration * 1000);
+      }
+      const voice = { source, priority };
+      this.voices.add(voice);
+      source.onended = () => {
+        source.disconnect();
+        this.voices.delete(voice);
+      };
+      source.start();
+    } catch {
+      if (
+        this.enabled &&
+        !this.closed &&
+        generation === (this.effectGeneration || 0)
+      ) {
+        // Failed SFX decoding must obey the same cap as normal playback.
+        if (this.voices.size < 6) {
+          const marker = { priority: 1, source: { stop() {} } };
+          this.voices.add(marker);
+          super.cue(name);
+          marker.timer = setTimeout(() => this.voices.delete(marker), 1800);
+        }
+        this.onWarning("일부 효과음을 불러오지 못해 기본 합성음을 사용합니다.");
+      }
+    }
+  }
+  silenceEffects() {
+    this.effectGeneration = (this.effectGeneration || 0) + 1;
+    for (const v of this.voices) {
+      clearTimeout(v.timer);
+      try {
+        v.source.stop();
+      } catch {}
+    }
+    for (const n of this.nodes)
+      if (n.bus === this.effects) {
+        try {
+          n.o.stop();
+        } catch {}
+      }
+    clearTimeout(this.duckTimer);
+    if (this.duck) {
+      this.duck.gain.cancelScheduledValues(this.ctx.currentTime);
+      this.duck.gain.setValueAtTime(1, this.ctx.currentTime);
+    }
+    this.voices.clear();
+  }
+  disable() {
+    this.silenceEffects();
+    super.disable();
+  }
+  visibility() {
+    if (document.hidden) {
+      this.silenceEffects();
+      this.stopMusic();
+    } else this.startMusic();
+  }
+  close() {
+    this.closed = true;
+    clearTimeout(this.duckTimer);
+    this.abort?.abort();
+    super.close();
+    // Closing a context can prevent queued onended callbacks from firing.
+    for (const n of this.nodes) {
+      n.o.disconnect();
+      n.g.disconnect();
+    }
+    this.nodes.clear();
+    this.cache.clear();
   }
 }

@@ -14,7 +14,8 @@ export const roleNames = {
 
 // 역할 도감과 역할 확인 패널에서 사용하는 설명 문구입니다.
 export const roleDescriptions = {
-  merlin: "모드레드를 제외한 악 진영을 알고 있습니다. 정체를 숨긴 채 원정을 이끄세요.",
+  merlin:
+    "모드레드를 제외한 악 진영을 알고 있습니다. 정체를 숨긴 채 원정을 이끄세요.",
   percival: "멀린과 모르가나 후보를 알지만 둘을 구별할 수 없습니다.",
   servant: "대화와 투표 기록으로 동료를 찾아 원정을 성공시키세요.",
   assassin: "원정이 3회 성공하면 멀린을 찾아 암살할 마지막 기회가 있습니다.",
@@ -78,8 +79,8 @@ export const questTeams = [
 ];
 
 // 역할 코드에 해당하는 이미지가 있으면 사용하고, 없으면 기본 기사 이미지를 반환합니다.
-export function roleImage(role) {
+export function roleImage(role, thumbnail = false) {
   return Object.hasOwn(roleNames, role)
-    ? `/assets/roles/${role}.png`
-    : "/assets/knight.webp";
+    ? `/assets/remaster/roles/${role}${thumbnail ? "-thumb" : ""}.webp`
+    : "/assets/remaster/board/neutral-knight.webp";
 }

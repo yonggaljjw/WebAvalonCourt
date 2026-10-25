@@ -43,12 +43,13 @@ const {
 
 // 오디오 관련 상태와 동작은 별도의 composable로 분리했습니다.
 const {
+  audioWarning,
   soundOn,
   musicVolume,
   effectVolume,
   updateVolume,
   toggleSound,
-} = useAudio(room, connection, error);
+} = useAudio(room, connection);
 
 // 방 만들기 모달을 열면서 이전 비밀번호 입력값을 비웁니다.
 function openCreate() {
@@ -78,18 +79,14 @@ function submitModal() {
 
 <template>
   <!-- 공통 헤더: 현재 페이지와 방 정보를 내려주고 navigate 이벤트를 받습니다. -->
-  <AppHeader
-    :page="page"
-    :room="room"
-    :user="user"
-    @navigate="page = $event"
-  />
+  <AppHeader :page="page" :room="room" :user="user" @navigate="page = $event" />
 
-  <main>
+  <main :class="['page-' + page, { 'has-room': Boolean(room) }]">
     <SoundControls
       v-model:musicVolume="musicVolume"
       v-model:effectVolume="effectVolume"
       :sound-on="soundOn"
+      :warning="audioWarning"
       @toggle="toggleSound"
       @volume-change="updateVolume"
     />

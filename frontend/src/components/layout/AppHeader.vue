@@ -17,10 +17,10 @@ const emit = defineEmits(["navigate"]);
       class="brand"
       @click.prevent="emit('navigate', room ? 'game' : 'lobby')"
     >
-      <img src="/assets/crest.webp" alt="아발론 문장" />
-      <span>AVALON <small>THE RESISTANCE</small></span>
+      <img src="/assets/remaster/emblems/royal-crest.webp" alt="아발론 문장" />
+      <span>AVALON <small>COURT OF CAMELOT</small></span>
     </a>
-    <nav>
+    <nav aria-label="주 메뉴">
       <button
         :class="{ active: page === 'lobby' || page === 'game' }"
         @click="emit('navigate', room ? 'game' : 'lobby')"

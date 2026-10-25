@@ -1,27 +1,24 @@
-/*
- * 학습용 주석
- * 이 파일은 Vue 컴포넌트별 scoped CSS 대신 앱 전체가 공유하는 스타일을 모아둔 전역 CSS입니다.
- * 위에서부터 기본 색/폰트 → 공통 버튼/패널 → 로비 → 게임 → 채팅 → 반응형 순서로 읽으면 편합니다.
- * CSS는 위에서 아래로 같은 우선순위의 규칙이 덮어써질 수 있으므로 선언 순서도 의미가 있습니다.
- */
-
+/* 시청각 표현 전용. 규칙과 통신은 useAvalon 및 서버가 관리합니다. */
 :root {
   color-scheme: dark;
-  font-family: Georgia, "Noto Serif KR", "Malgun Gothic", serif;
-  color: #e2e2e8;
-  background: #0d0f13;
-  font-size: 16px;
+  font-family: "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
   font-synthesis: none;
-  --gold: #e9c349;
-  --line: #423b2b;
-  --muted: #aaa99f;
+  color: #eee8dc;
+  background: #080c14;
+  --gold: #dfc18a;
+  --line: #81704c66;
+  --muted: #b5b6bc;
+  --surface: #111923;
+  --blue: #8ec9ed;
+  --red: #eda0aa;
 }
 * {
   box-sizing: border-box;
 }
 body {
   margin: 0;
-  background: radial-gradient(ellipse at 50% 0, #25232144, transparent 65%);
+  background: radial-gradient(ellipse at 50% 0, #28334855, transparent 70%);
+  min-width: 320px;
 }
 button,
 input,
@@ -31,47 +28,73 @@ select {
 button,
 a,
 input,
-select {
+select,
+summary {
   touch-action: manipulation;
 }
-button {
-  border: 1px solid var(--line);
-  padding: 11px 17px;
-  color: #dac99e;
-  background: #222222;
+button,
+summary {
   cursor: pointer;
-  border-radius: 3px;
 }
-button:hover {
-  border-color: var(--gold);
-  background: #302a1a;
+button {
+  min-height: 44px;
+  border: 1px solid #8b77574d;
+  padding: 11px 18px;
+  color: #e6d5b1;
+  background: linear-gradient(135deg, #27303b, #161e29);
+  border-radius: 4px;
+  transition:
+    background 0.16s,
+    border-color 0.16s,
+    box-shadow 0.16s,
+    transform 0.16s;
+}
+button:hover:not(:disabled) {
+  border-color: #d5b77b;
+  background: #303847;
+  box-shadow: 0 0 18px #c7a76b12;
+}
+button:active:not(:disabled) {
+  transform: translateY(1px);
 }
 button:disabled {
-  opacity: 0.4;
+  opacity: 0.42;
   cursor: not-allowed;
 }
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
-select:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 3px;
+select:focus-visible,
+summary:focus-visible {
+  outline: 2px solid #f1cf8e;
+  outline-offset: 4px;
 }
 input,
 select {
   width: 100%;
-  padding: 13px;
-  background: #0d0f13;
-  border: 1px solid #49463c;
-  border-radius: 3px;
-  color: #eee;
+  min-height: 44px;
+  padding: 12px;
+  background: #080e18;
+  border: 1px solid #78808d66;
+  border-radius: 4px;
+  color: #f1eee7;
   margin-top: 9px;
   min-width: 0;
+  font-size: 16px;
+}
+input[type="range"] {
+  min-height: 24px;
+  padding: 0;
+  accent-color: var(--gold);
+}
+input[type="checkbox"] {
+  accent-color: var(--gold);
+  min-height: 20px;
 }
 label {
   display: block;
+  color: #d2cbbc;
   font-size: 14px;
-  color: #c5bea9;
   margin: 16px 0;
 }
 h1,
@@ -80,266 +103,492 @@ h3,
 p {
   margin-top: 0;
 }
+h1,
+h2,
+h3 {
+  overflow-wrap: anywhere;
+}
 h1 {
   font-size: 36px;
-  line-height: 1.4;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  line-height: 1.35;
+  font-weight: 650;
+  letter-spacing: -0.04em;
 }
 h2 {
   font-size: 23px;
+  letter-spacing: -0.025em;
 }
 h3 {
   font-size: 18px;
 }
 p {
-  line-height: 1.8;
-  color: #bbb8ad;
+  color: #c5c7cd;
+  line-height: 1.85;
 }
 small {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--muted);
 }
-.top {
-  min-height: 83px;
-  border-bottom: 1px solid var(--line);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 4%;
-  gap: 24px;
-  background: #111317;
-}
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--gold);
-  text-decoration: none;
-  font-size: 23px;
-  letter-spacing: 0.06em;
-}
-.brand img {
-  width: 47px;
-  height: 50px;
-  object-fit: cover;
-}
-.brand small {
-  display: block;
-  font-size: 12px;
-  letter-spacing: 0.18em;
-  color: #b99d50;
-}
-.top nav {
-  display: flex;
-  gap: 12px;
-}
-.top nav button {
-  background: none;
-  border-color: transparent;
-}
-.top nav .active,
-.tabs .active {
-  color: var(--gold);
-  border-bottom: 2px solid var(--gold);
-}
-.profile {
-  font-size: 14px;
-  color: #d1bc84;
-}
-main {
-  max-width: 1380px;
-  margin: auto;
-  padding: 36px 38px 70px;
-  min-height: 85vh;
+img {
+  max-width: 100%;
 }
 .eyebrow {
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  color: #d0b361;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: #d8bd85;
   line-height: 1.8;
-  margin-bottom: 13px;
+  margin-bottom: 10px;
 }
-.intro {
-  display: flex;
-  position: relative;
-  min-height: 310px;
-  overflow: hidden;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 36px;
-  padding: 20px 32px;
-  background: #17191d;
-}
-.intro > div {
-  z-index: 1;
-  width: 70%;
-  padding: 10px;
-}
-.intro > img {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 52%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 30%;
-  mask-image: linear-gradient(to right, transparent, black 55%);
-  opacity: 0.65;
-}
-.intro h1 {
-  font-size: 38px;
-  margin-bottom: 14px;
-}
-.intro p {
-  font-size: 15px;
-}
-.tags {
-  display: flex;
-  gap: 10px;
-}
-.tags span {
-  font-size: 12px;
-  padding: 5px 9px;
-  border: 1px solid #61502e;
-  color: #cdbd95;
-}
-.lobby-layout {
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 26px;
-}
-.section-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 15px;
-}
-.section-title h2 {
-  margin: 0;
-}
-.section-title small {
-  margin-left: 10px;
-}
-.search {
-  margin: 0 0 18px;
-}
-.panel {
-  padding: 24px;
-  background: #191b20;
-  border: 1px solid #35342f;
-  margin-bottom: 20px;
-  box-shadow: 0 8px 28px #0002;
+.muted {
+  color: var(--muted);
+  font-size: 13px;
 }
 .gold {
-  background: linear-gradient(#f2d36d, #cba640);
-  border-color: #e5c460;
-  color: #211b0c;
-  font-weight: bold;
+  background: linear-gradient(125deg, #f1d69f, #bda16a);
+  color: #201a10;
+  border-color: #e8c88c;
+  font-weight: 700;
+  box-shadow: 0 4px 18px #d7af5a1c;
 }
-.gold:hover {
-  background: #f2d36d;
-  color: #111;
+.gold:hover:not(:disabled) {
+  background: linear-gradient(125deg, #ffe4b3, #d0ae6b);
+  color: #18130a;
 }
 .blue {
-  background: #143674;
-  border-color: #3d68aa;
-  color: #e2ebff;
+  background: linear-gradient(135deg, #183d59, #102336);
+  border-color: #72add288;
+  color: #d9efff;
 }
 .red {
-  background: #5b2025;
-  border-color: #a14548;
-  color: #ffdcdc;
+  background: linear-gradient(135deg, #542431, #271621);
+  border-color: #ca758488;
+  color: #ffe2e7;
 }
 .wide {
   display: block;
   width: 100%;
-  margin-top: 14px;
+  margin-top: 12px;
 }
 .link {
   border: 0;
-  background: transparent;
-  padding-left: 0;
+  background: none;
   color: var(--gold);
-}
-.hint p {
-  font-size: 14px;
-}
-.room-card {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding: 22px 18px;
-  background: #191b20;
-  border: 1px solid #37352b;
-  border-left: 3px solid #b89b40;
-  margin-bottom: 13px;
-}
-.room-card h3 {
-  margin: 7px 0 8px;
-}
-.room-card .eyebrow {
-  font-size: 12px;
-}
-.room-mark {
-  font-size: 29px;
-  color: #c3a657;
+  padding-left: 0;
 }
 .grow {
   flex: 1;
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.empty {
-  text-align: center;
-  border: 1px dashed #464034;
-  padding: 65px 20px;
+.panel {
+  padding: 25px;
+  background: linear-gradient(135deg, #1b2532f5, #101720f5);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  margin-bottom: 22px;
+  box-shadow:
+    0 16px 45px #0003,
+    inset 0 1px #ffe7b009;
 }
-.empty > span {
-  font-size: 40px;
-  color: var(--gold);
+.top {
+  min-height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 12px max(28px, calc((100vw - 1480px) / 2));
+  border-bottom: 1px solid var(--line);
+  background: #090f19f5;
+  position: relative;
+  z-index: 3;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: #e3c995;
+  text-decoration: none;
+  font-family: Georgia, serif;
+  font-size: 25px;
+  letter-spacing: 0.12em;
+}
+.brand img {
+  width: 45px;
+  height: 54px;
+  object-fit: contain;
+}
+.brand small {
   display: block;
+  font-size: 8px;
+  letter-spacing: 0.32em;
+  color: #bfa77d;
+  margin-top: 5px;
+}
+.top nav {
+  display: flex;
+  gap: 15px;
+}
+.top nav button {
+  background: transparent;
+  border-color: transparent;
+  font-size: 13px;
+  padding: 11px 15px;
+  border-radius: 0;
+}
+.top nav .active {
+  color: #f0d29b;
+  border-bottom: 1px solid #dfc18a;
+}
+.profile {
+  color: #c2b396;
+  font-size: 12px;
+  max-width: 200px;
+  overflow-wrap: anywhere;
+}
+main {
+  max-width: 1520px;
+  min-height: 82vh;
+  margin: auto;
+  padding: 18px 32px 70px;
+  position: relative;
+}
+.sound-controls {
+  width: max-content;
+  max-width: 100%;
+  margin: 0 0 16px auto;
+  position: relative;
+  z-index: 4;
+  font-size: 12px;
+}
+.sound-controls summary {
+  min-height: 40px;
+  padding: 10px 0 10px 16px;
+  list-style: none;
+  color: #d8c7a3;
+}
+.sound-controls summary span {
+  color: #cfb77f;
+  margin-right: 8px;
+}
+.sound-controls summary small {
+  margin-left: 10px;
+  color: #aaa;
+}
+.sound-settings {
+  /* Opening settings reserves space instead of covering room actions. */
+  position: static;
+  width: 310px;
+  max-width: calc(100vw - 30px);
+  border: 1px solid #a58a54;
+  background: #101925;
+  padding: 20px;
+  box-shadow: 0 14px 50px #0009;
+  border-radius: 5px;
+}
+.sound-settings label {
+  font-size: 13px;
+}
+.sound-settings button {
+  width: 100%;
+}
+.sound-settings small {
+  display: block;
+  line-height: 1.7;
+}
+/* 로비: 배경은 공간, 모든 글자와 조작은 HTML입니다. */
+.intro {
+  isolation: isolate;
+  position: relative;
+  min-height: 550px;
+  padding: 45px 52px 40px;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #a6884f55;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #101923 url("/assets/remaster/backgrounds/camelot-hall.webp")
+    center/cover no-repeat;
+  box-shadow: 0 22px 75px #0005;
+}
+.intro:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, #080e18eb 0%, #080e18b3 40%, #080e1820 78%),
+    linear-gradient(0deg, #080e18b3, transparent 65%);
+  z-index: -1;
+}
+.intro > div {
+  position: relative;
+  z-index: 1;
+  max-width: 620px;
+}
+.hero-wordmark {
+  font-family: Georgia, serif;
+  font-size: clamp(56px, 6vw, 84px);
+  letter-spacing: 0.12em;
+  color: #e6c994;
+  line-height: 1.08;
+  text-shadow: 0 3px 24px #000;
+  margin: 12px 0 27px;
+}
+.hero-wordmark span {
+  display: block;
+  font:
+    9px/2.2 Georgia,
+    serif;
+  letter-spacing: 0.66em;
+  color: #ddc79f;
+  padding-left: 4px;
+  margin-top: 8px;
+}
+.intro h1 {
+  font-size: 29px;
+  line-height: 1.55;
+  margin-bottom: 18px;
+  color: #f4efdf;
+}
+.intro p {
+  font-size: 14px;
+}
+.intro > .hero-crest {
+  position: absolute;
+  right: 9%;
+  top: 24%;
+  width: 200px;
+  height: 250px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 35px #000);
+  opacity: 0.88;
+}
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  margin: 27px 0 24px;
+}
+.hero-actions button {
+  padding: 13px 22px;
+}
+.hero-actions span {
+  margin-left: 18px;
+}
+.tags {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.tags span {
+  font-size: 11px;
+  color: #d8d0bf;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tags span:before {
+  content: "◇";
+  color: #bba16e;
+}
+.lobby-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 28px;
+}
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
   margin-bottom: 20px;
 }
-.muted {
-  color: #98988f;
-  font-size: 14px;
+.section-title h2 {
+  margin: 0;
+  font-size: 23px;
+}
+.section-title small {
+  margin-left: 12px;
+  font:
+    9px Georgia,
+    serif;
+  letter-spacing: 0.13em;
+  color: #b49b6d;
+}
+.section-title button {
+  font-size: 12px;
+  background: transparent;
+}
+.search {
+  margin: 0 0 18px;
+  background: #101720;
+}
+.room-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+}
+.room-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 23px 20px;
+  border: 1px solid #9b82594d;
+  border-radius: 6px;
+  background: linear-gradient(140deg, #253143d9, #101721);
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 1px #ddbf8812;
+}
+.room-card:after {
+  content: "◇";
+  font:
+    100px Georgia,
+    serif;
+  position: absolute;
+  right: 15px;
+  top: 5px;
+  color: #b1975d09;
+  pointer-events: none;
+}
+.room-card .grow {
+  flex-basis: 65%;
+}
+.room-card h3 {
+  font-size: 17px;
+  margin: 7px 0 10px;
+}
+.room-card small {
+  line-height: 1.8;
+  font-size: 11px;
+}
+.room-card button {
+  margin-left: auto;
+  font-size: 12px;
+  position: relative;
+  z-index: 1;
+}
+.room-mark {
+  font-size: 30px;
+  color: var(--gold);
+}
+.empty {
+  grid-column: 1/-1;
+  text-align: center;
+  border: 1px solid #a2865344;
+  background: linear-gradient(#101924, #0b131e);
+  border-radius: 6px;
+  padding: 55px 20px;
+}
+.empty > span {
+  display: block;
+  font-size: 36px;
+  color: #bda474;
+  margin-bottom: 18px;
+}
+.empty h3 {
+  font-size: 18px;
+}
+.empty p {
+  font-size: 13px;
+}
+.lobby-layout aside h2 {
+  font-size: 22px;
+}
+.lobby-layout aside p {
+  font-size: 13px;
+}
+.hint {
+  background: linear-gradient(135deg, #2a2c2b, #151e28);
+}
+.hint h3 {
+  color: var(--gold);
 }
 .error,
 .notice {
-  background: #452028;
-  border: 1px solid #a35257;
-  padding: 15px;
+  padding: 16px 20px;
+  border: 1px solid #c66b7780;
+  background: #3b1d28f5;
+  color: #f1cbd1;
+  line-height: 1.8;
   margin-bottom: 20px;
-  line-height: 1.7;
+  border-radius: 5px;
   overflow-wrap: anywhere;
 }
 .error button {
   float: right;
-  padding: 0 8px;
+  padding: 0 10px;
+  min-height: 32px;
+  margin-left: 8px;
 }
 .notice {
-  background: #38301c;
-  border-color: #8d773b;
-  color: #ecd797;
+  background: #30291aeb;
+  border-color: #d5ae6155;
+  color: #e4cc99;
+}
+/* 보드와 원탁 */
+.game-scene {
+  position: relative;
+  isolation: isolate;
+}
+.game-scene:before {
+  content: "";
+  position: absolute;
+  inset: 50px -20px 0;
+  z-index: -1;
+  background:
+    linear-gradient(#080c1477, #080c14f5 900px),
+    url("/assets/remaster/backgrounds/council-chamber.webp") top center/100%
+      auto no-repeat;
+  opacity: 0.8;
+  pointer-events: none;
+}
+.scene-assassination:before {
+  background-image:
+    linear-gradient(#140b1488, #080c14f5 900px),
+    url("/assets/remaster/backgrounds/assassination.webp");
+}
+.scene-lady:before {
+  background-image:
+    linear-gradient(#08142388, #080c14f5 900px),
+    url("/assets/remaster/backgrounds/lake.webp");
 }
 .room-heading {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 15px;
-  margin-bottom: 25px;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
 }
 .room-heading h1 {
-  font-size: 26px;
+  font-size: 25px;
   margin: 0;
 }
+.room-heading > div:last-child {
+  display: flex;
+  gap: 10px;
+}
+.room-heading button {
+  font-size: 12px;
+}
 .room-heading .eyebrow {
-  margin-bottom: 5px;
+  margin-bottom: 6px;
+}
+.connection-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: #df9c7c;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+.connection-dot.live {
+  background: #9dc8a8;
+  box-shadow: 0 0 8px #8bc5a777;
 }
 .game-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
+  grid-template-columns: minmax(0, 1fr) 330px;
   gap: 24px;
 }
 .play-column {
@@ -349,258 +598,500 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: 1px solid #615335;
-  border-left: 4px solid var(--gold);
-  padding: 19px 23px;
-  background: #232321;
+  gap: 15px;
+  padding: 18px 23px;
+  background: linear-gradient(100deg, #293443f5, #101925f5);
+  border: 1px solid #b49a6655;
+  border-left: 3px solid #d5b97f;
+  border-radius: 6px 6px 0 0;
 }
 .phase-banner h2 {
+  font-size: 21px;
   margin: 5px 0 0;
 }
-.phase-banner strong {
-  font-size: 23px;
-  color: var(--gold);
+.phase-banner small {
+  font:
+    10px Georgia,
+    serif;
+  letter-spacing: 0.15em;
+  color: #c3ac7f;
+}
+.phase-clock {
+  font:
+    25px Georgia,
+    serif;
+  color: #eed6a5;
+  white-space: nowrap;
+  min-width: 75px;
+  text-align: right;
+}
+.phase-banner.urgent {
+  border-left-color: #ed9eaa;
+}
+.urgent .phase-clock {
+  color: #ffb9c6;
 }
 .quest-track {
   display: flex;
   justify-content: center;
-  gap: 27px;
-  padding: 25px 10px;
-  background: #121419;
+  gap: 18px;
+  padding: 18px 12px 15px;
+  background: #09131de6;
+  border-inline: 1px solid #a68d5c33;
 }
 .quest-track > div {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  gap: 9px;
   flex: 1;
-  max-width: 90px;
+  max-width: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
   text-align: center;
+  position: relative;
 }
-.quest-track span {
+.quest-track > div:not(:last-child):after {
+  content: "";
+  position: absolute;
+  top: 25px;
+  left: 85%;
+  width: 45%;
+  height: 1px;
+  background: #9c8a5c44;
+}
+.quest-medallion {
   display: grid;
   place-items: center;
-  width: 46px;
-  height: 46px;
-  border: 2px solid #494338;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  font-size: 23px;
-  color: #b4a78c;
-  background: #22252c;
+  border: 1px solid #ad936355;
+  color: #8e8a80;
+  background: #101c28;
+  box-shadow: inset 0 0 16px #0008;
 }
-.quest-track .current span {
-  border-color: var(--gold);
-  box-shadow: 0 0 15px #cfb54d33;
+.quest-medallion b {
+  font:
+    20px Georgia,
+    serif;
 }
-.quest-track .success span {
-  background: #193c79;
-  border-color: #4a77b9;
-  color: white;
+.quest-medallion img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
 }
-.quest-track .fail span {
-  background: #68282b;
-  border-color: #b05456;
-  color: white;
+.current .quest-medallion {
+  border-color: #e0bf80;
+  box-shadow:
+    0 0 20px #c7a76b15,
+    inset 0 0 16px #0008;
+}
+.success .quest-medallion {
+  border-color: #6dabc1;
+}
+.fail .quest-medallion {
+  border-color: #bc6c7e;
+}
+.quest-track small {
+  font-size: 10px;
+  color: #bdb8ab;
+}
+.quest-track small b {
+  font-weight: 400;
+}
+.quest-track .threshold {
+  font-size: 9px;
+  color: #d2b984;
 }
 .table-area {
-  padding: 22px;
-  background: radial-gradient(ellipse, #282923 0, #15181e 68%);
-  border: 1px solid #34372e;
-  min-height: 330px;
+  height: 620px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: radial-gradient(ellipse, #34405566, #0b121ccc 75%);
+  border-inline: 1px solid #a68d5c33;
+}
+.table-surface {
+  position: absolute;
+  left: 10%;
+  top: 18%;
+  width: 80%;
+  height: 65%;
+  z-index: -1;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse, black 47%, transparent 73%);
+}
+.table-surface img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  opacity: 0.82;
 }
 .table-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 34%;
   text-align: center;
-  padding: 13px;
+  background: radial-gradient(ellipse, #0b101ae8, #0b101a77 65%, transparent);
+  padding: 24px 5px;
+  pointer-events: none;
+}
+.table-center .eyebrow {
+  font:
+    8px Georgia,
+    serif;
+  letter-spacing: 0.22em;
 }
 .table-center h2 {
-  color: #d1bc80;
+  font-size: 20px;
+  line-height: 1.5;
+  color: #eee1c2;
+  margin-bottom: 8px;
+  text-shadow: 0 2px 8px #000;
 }
 .table-center p {
-  font-size: 14px;
+  font-size: 11px;
+  line-height: 1.8;
+  margin-bottom: 10px;
+  color: #e5d7bb;
+}
+.table-hint {
+  font-size: 9px;
+  color: #b9b2a2;
+  line-height: 1.8;
+  display: block;
 }
 .seats {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 13px;
+  position: absolute;
+  inset: 0;
 }
 .seat {
+  position: absolute;
+  left: var(--seat-x);
+  top: var(--seat-y);
+  transform: translate(-50%, -50%);
+  width: 116px;
+  min-height: 130px;
+  padding: 8px 7px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 12px 5px;
-  background: #151820;
-  min-width: 0;
+  gap: 5px;
+  background: linear-gradient(145deg, #27303fee, #0d1723f2);
+  border: 1px solid #c5aa6b55;
+  border-radius: 7px;
+  box-shadow: 0 8px 22px #0007;
+  cursor: default;
 }
-.seat b {
-  font-size: 14px;
-  max-width: 100%;
-  overflow-wrap: anywhere;
+.seat:hover:not(:disabled) {
+  background: linear-gradient(145deg, #27303f, #0d1723);
+  border-color: #c5aa6b55;
 }
-.seat img {
-  width: 56px;
-  height: 65px;
-  object-fit: cover;
-  border: 1px solid #746242;
+.can-select .seat {
+  cursor: pointer;
+}
+.can-select .seat:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 18px #c7a76b33;
+}
+.seat:active:not(:disabled) {
+  transform: translate(-50%, -50%);
 }
 .seat-top {
-  font-size: 12px;
-  color: #bca369;
+  font-size: 10px;
+  color: #c4b28e;
+  line-height: 1.4;
+  white-space: nowrap;
 }
-.seat.selected {
-  border: 2px solid #e9c349;
-  box-shadow: 0 0 20px #e9c34930;
+.avatar-ring {
+  width: 46px;
+  height: 46px;
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+}
+.avatar-ring > img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #ac976577;
+}
+.me-tag {
+  position: absolute;
+  right: -5px;
+  bottom: -3px;
+  background: #d9bd84;
+  color: #1c1a16;
+  border-radius: 8px;
+  font-size: 9px;
+  padding: 2px 5px;
+}
+.seat b {
+  font-size: 12px;
+  color: #eee9df;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.6;
+}
+.seat-state {
+  font-size: 9px;
+  color: #c0c4cb;
+  white-space: nowrap;
+}
+.seat.is-leader {
+  border-color: #c9ac6d;
+  box-shadow:
+    0 0 0 1px #bc9a5533,
+    0 8px 25px #0008;
+}
+.seat.is-leader .seat-top {
+  color: #f0d294;
+}
+.seat.is-ready .seat-state {
+  color: #a9d6b1;
 }
 .seat.nominated {
-  background: #1b2b40;
+  background: linear-gradient(135deg, #28455c, #112233);
+  border-color: #78afce;
+}
+.seat.selected {
+  border: 2px solid #f2cc79;
+  box-shadow: 0 0 25px #dcb36a33;
+  z-index: 1;
+}
+.selection-tag {
+  position: absolute;
+  top: -12px;
+  right: 5px;
+  color: #221c10;
+  background: #e0bd7a;
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 8px;
 }
 .seat.offline {
-  opacity: 0.5;
+  filter: saturate(0.25);
+  opacity: 0.67;
+}
+.lady-tag {
+  font-size: 8px;
+  color: #9bcce8;
 }
 .actions {
   text-align: center;
-  padding: 23px;
-  background: #1d2027;
-  border: 1px solid #454035;
+  padding: 22px;
+  background: linear-gradient(120deg, #202c39f5, #101924fa);
+  border: 1px solid #b0965f55;
+  border-top: 2px solid #b0965f66;
+  border-radius: 0 0 6px 6px;
+  margin-bottom: 20px;
   min-height: 120px;
+  position: relative;
+}
+.actions h3 {
+  font-size: 19px;
+  margin-bottom: 8px;
+}
+.actions p {
+  font-size: 13px;
+  margin: 5px 0 15px;
 }
 .actions button {
   margin: 5px;
+  font-size: 13px;
 }
-.actions p {
-  font-size: 14px;
-  margin: 9px 0;
+.action-token {
+  width: 54px;
+  height: 60px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 7px;
 }
+.action-phase-vote .blue,
+.action-phase-vote .red,
+.action-phase-quest .blue,
+.action-phase-quest .red {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 165px;
+  padding: 17px 22px;
+  min-height: 116px;
+}
+.ready-meter {
+  max-width: 220px;
+  height: 3px;
+  background: #3d4144;
+  margin: 18px auto 0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.ready-meter span {
+  display: block;
+  height: 100%;
+  background: #c7b07b;
+  transition: width 0.3s;
+}
+/* 비밀 카드와 도감 */
 .identity {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 20px;
-  border-left: 3px solid #b5984d;
+  align-items: center;
+  gap: 18px;
+  border-left: 3px solid #b69a61;
+}
+.identity-heading {
+  flex: 1;
+  min-width: 150px;
 }
 .identity h3 {
-  margin: 7px 0;
+  font-size: 17px;
+  margin: 4px 0 6px;
+}
+.identity .eyebrow {
+  font-size: 9px;
+}
+.identity .muted {
+  font-size: 11px;
+  margin-bottom: 0;
+}
+.identity > button {
+  font-size: 12px;
+}
+.sealed-mini {
+  width: 39px;
+  height: 59px;
+  object-fit: contain;
+  border-radius: 3px;
 }
 .secret {
   flex-basis: 100%;
-  border-top: 1px solid var(--line);
-  padding-top: 15px;
-}
-.secret p {
-  font-size: 14px;
-  margin-bottom: 7px;
-}
-.settings-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 20px;
-}
-.checks {
   display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
+  align-items: flex-start;
+  gap: 24px;
+  border-top: 1px solid #8c784444;
+  padding-top: 23px;
+  animation: card-reveal 0.42s ease both;
 }
-.checks label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.secret > .portrait-frame {
+  width: 175px;
+  flex-shrink: 0;
 }
-.checks input {
-  width: 17px;
-  margin: 0;
-  accent-color: var(--gold);
-}
-.discourse {
-  align-self: start;
-  padding: 0;
-  position: sticky;
-  top: 20px;
-}
-.tabs {
-  display: flex;
-  border-bottom: 1px solid #444;
-}
-.tabs button {
+.secret-description {
   flex: 1;
-  border: 0;
-  background: transparent;
-  padding: 17px 5px;
+  min-width: 0;
 }
-.messages {
-  height: 570px;
-  overflow: auto;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-.messages article {
-  border-bottom: 1px solid #34332e;
-  padding-bottom: 15px;
-  overflow-wrap: anywhere;
-}
-.messages b {
-  font-size: 14px;
-  color: #d5bf83;
-}
-.messages p {
-  font-size: 14px;
-  margin: 7px 0 0;
-}
-.messages .system {
-  text-align: center;
+.secret-description p {
   font-size: 13px;
-  color: #aaa38e;
-  padding-bottom: 10px;
+  line-height: 1.9;
 }
-.chat-form {
-  display: flex;
-  border-top: 1px solid var(--line);
-  padding: 12px;
-  gap: 8px;
+.portrait-frame {
+  position: relative;
+  aspect-ratio: 2/3;
+  overflow: hidden;
+  background: #0a1018;
+  isolation: isolate;
 }
-.chat-form input {
-  margin: 0;
-  font-size: 14px;
+.role-portrait {
   width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
-.chat-form button {
-  padding: 8px;
+.portrait-border {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  z-index: 1;
 }
-.result {
-  text-align: center;
-  padding: 40px 22px;
-  background: radial-gradient(ellipse at top, #243858, #141820);
-}
-.result.evil {
-  background: radial-gradient(ellipse at top, #50232c, #17171b);
-}
-.result h1 {
-  font-size: 28px;
-}
-.result p {
-  margin-bottom: 10px;
+.portrait-fallback {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: 20px;
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted);
 }
 .page-heading {
-  border-bottom: 1px solid var(--line);
-  padding: 15px 0 25px;
+  padding: 25px 0 30px;
   margin-bottom: 30px;
+  border-bottom: 1px solid var(--line);
+}
+.page-heading h1 {
+  font-size: 31px;
+  margin-bottom: 14px;
+}
+.page-heading p {
+  font-size: 14px;
+}
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 23px;
+}
+.role-card {
+  border: 1px solid #917b5255;
+  border-radius: 6px;
+  overflow: hidden;
+  background: linear-gradient(145deg, #202b3a, #101923);
+  transition:
+    transform 0.18s,
+    border-color 0.18s;
+}
+.role-card:hover {
+  transform: translateY(-4px);
+  border-color: #bca06d;
+}
+.role-card > div:not(.portrait-frame) {
+  padding: 22px;
+}
+.role-card .eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+.role-card h2 {
+  font-size: 22px;
+  margin: 9px 0 11px;
+}
+.role-card p {
+  font-size: 13px;
+  margin-bottom: 0;
 }
 .rules-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
+  margin-bottom: 26px;
 }
 .rules-grid .panel {
   margin: 0;
 }
-.rules-grid + .panel {
-  margin-top: 25px;
+.parchment-panel {
+  background:
+    linear-gradient(#ede0c8ed, #e3d1b2f5),
+    url("/assets/remaster/ui/parchment.webp") center/cover;
+  color: #2c302e;
+  border-color: #e2cc9b;
 }
-.rules-grid p {
-  font-size: 16px;
+.parchment-panel h2 {
+  color: #292c2d;
+  font-size: 21px;
+}
+.parchment-panel p {
+  color: #3f443f;
+  font-size: 14px;
+}
+.parchment-panel .eyebrow {
+  color: #70562c;
 }
 .table-scroll {
   overflow: auto;
@@ -613,409 +1104,147 @@ table {
 td,
 th {
   padding: 14px;
-  border-bottom: 1px solid #403b2f;
-  font-size: 14px;
+  border-bottom: 1px solid #89744c55;
+  font-size: 13px;
+  white-space: nowrap;
 }
 th {
-  color: #d5bd77;
+  color: #d7bd89;
 }
-.roles-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+.parchment-panel th {
+  color: #5b4323;
 }
-.role-card {
-  border: 1px solid #4d4432;
-  background: #171a21;
+/* 결과는 서버 ended에서만 표시 */
+.result {
+  border: 1px solid #ad93624d;
+  background: #0e1826;
+  border-radius: 0 0 7px 7px;
+  overflow: hidden;
+  padding-bottom: 28px;
+  text-align: center;
 }
-.role-card img {
-  width: 100%;
-  height: 230px;
-  object-fit: cover;
-  object-position: 50% 30%;
-}
-.role-card > div {
-  padding: 20px;
-}
-.role-card p {
-  font-size: 14px;
-}
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 20;
-  background: #000c;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  backdrop-filter: blur(5px);
-}
-.modal {
+.result-verdict {
+  padding: 40px 28px 45px;
   position: relative;
-  width: 480px;
-  max-width: 100%;
-  max-height: 90vh;
-  overflow: auto;
-  border-color: #b59a51;
-  padding: 32px;
+  isolation: isolate;
+  min-height: 320px;
+  background:
+    linear-gradient(90deg, #091322e8, #09132288),
+    url("/assets/remaster/results/good-victory.webp") 80% center/cover;
 }
-.close {
-  position: absolute;
-  right: 12px;
-  top: 10px;
-  padding: 2px 9px;
+.result.evil .result-verdict {
+  background-image:
+    linear-gradient(90deg, #180f1de8, #180f1d88),
+    url("/assets/remaster/results/evil-victory.webp");
 }
-.modal h2 {
-  margin-top: 15px;
+.result.aborted .result-verdict {
+  background: radial-gradient(ellipse, #333943, #111923);
 }
-footer {
-  border-top: 1px solid #353023;
-  padding: 25px 4%;
-  font-size: 12px;
-  color: #9b8a59;
-  display: flex;
-  justify-content: space-between;
-}
-footer span {
-  color: #88857c;
-}
-@media (max-width: 1050px) {
-  main {
-    padding: 25px 20px;
-  }
-  .game-layout {
-    grid-template-columns: 1fr 265px;
-  }
-  .seats {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .quest-track {
-    gap: 8px;
-  }
-  .roles-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .profile {
-    display: none;
-  }
-  .top {
-    gap: 10px;
-  }
-  .top nav {
-    gap: 0;
-  }
-  .top nav button {
-    padding: 10px;
-  }
-}
-@media (max-width: 767px) {
-  main {
-    padding: 20px 14px 80px;
-  }
-  .top {
-    padding: 12px 14px;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .brand {
-    font-size: 20px;
-  }
-  .brand img {
-    width: 37px;
-    height: 40px;
-  }
-  .top nav {
-    width: 100%;
-    justify-content: space-between;
-    border-top: 1px solid #333;
-    padding-top: 7px;
-  }
-  .top nav button {
-    font-size: 14px;
-    flex: 1;
-  }
-  .intro {
-    padding: 20px 8px;
-    min-height: 300px;
-    margin-bottom: 25px;
-  }
-  .intro > div {
-    width: 100%;
-  }
-  .intro h1 {
-    font-size: 29px;
-  }
-  .intro > img {
-    width: 80%;
-    opacity: 0.32;
-  }
-  .intro p {
-    font-size: 14px;
-  }
-  .tags {
-    gap: 5px;
-  }
-  .tags span {
-    font-size: 12px;
-    padding: 5px;
-  }
-  .lobby-layout,
-  .game-layout {
-    display: flex;
-    flex-direction: column;
-  }
-  .lobby-layout > aside {
-    order: -1;
-  }
-  .lobby-layout > aside .hint {
-    display: none;
-  }
-  .lobby-layout > aside .panel {
-    margin-bottom: 0;
-  }
-  .section-title h2 {
-    font-size: 20px;
-  }
-  .section-title small {
-    display: none;
-  }
-  .room-card {
-    gap: 10px;
-    padding: 18px 11px;
-  }
-  .room-card h3 {
-    font-size: 16px;
-  }
-  .room-mark {
-    display: none;
-  }
-  .room-card button {
-    padding: 10px;
-  }
-  .panel {
-    padding: 19px;
-  }
-  .room-heading {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-  .room-heading h1 {
-    font-size: 24px;
-  }
-  .room-heading button {
-    padding: 9px 12px;
-    font-size: 14px;
-  }
-  .phase-banner {
-    padding: 15px;
-  }
-  .phase-banner h2 {
-    font-size: 18px;
-  }
-  .phase-banner strong {
-    font-size: 18px;
-  }
-  .quest-track {
-    gap: 4px;
-    padding: 20px 4px;
-  }
-  .quest-track span {
-    width: 38px;
-    height: 38px;
-    font-size: 19px;
-  }
-  .quest-track small {
-    font-size: 12px;
-  }
-  .table-area {
-    padding: 10px;
-  }
-  .table-center {
-    padding: 10px 0;
-  }
-  .table-center h2 {
-    font-size: 21px;
-  }
-  .seats {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding: 10px 0 16px;
-    gap: 10px;
-  }
-  .seat {
-    flex: 0 0 100px;
-    scroll-snap-align: center;
-    min-height: 155px;
-  }
-  .actions {
-    padding: 18px 12px;
-    position: sticky;
-    bottom: 0;
-    z-index: 2;
-    box-shadow: 0 -5px 20px #0008;
-  }
-  .actions button {
-    font-size: 14px;
-  }
-  .identity {
-    margin-top: 16px;
-  }
-  .identity button {
-    font-size: 14px;
-  }
-  .settings-grid {
-    gap: 0 12px;
-  }
-  .discourse {
-    position: static;
-    padding: 0;
-  }
-  .messages {
-    height: 300px;
-  }
-  .rules-grid {
-    grid-template-columns: 1fr;
-  }
-  .roles-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-  .role-card > div {
-    padding: 13px;
-  }
-  .role-card h2 {
-    font-size: 20px;
-  }
-  .role-card img {
-    height: 170px;
-  }
-  .role-card .eyebrow {
-    font-size: 12px;
-  }
-  .page-heading h1 {
-    font-size: 28px;
-  }
-  .modal {
-    padding: 25px 20px;
-  }
-  footer {
-    gap: 15px;
-    flex-wrap: wrap;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  * {
-    scroll-behavior: auto !important;
-  }
-}
-
-/* 역할 초상화: 세로 원본 비율을 유지하여 왕관과 상징물을 자르지 않습니다. */
-.role-card img {
-  display: block;
-  height: auto;
-  aspect-ratio: 2/3;
+.result-emblem {
+  width: 95px;
+  height: 110px;
   object-fit: contain;
-  background: #0d0f13;
+  margin-bottom: 18px;
 }
-.secret {
-  display: flex;
-  align-items: flex-start;
-  gap: 22px;
+.result-verdict h1 {
+  font-size: 27px;
+  color: #ede1c6;
 }
-.secret-portrait {
-  width: 160px;
-  height: auto;
-  aspect-ratio: 2/3;
-  border: 1px solid #867039;
-  border-radius: 3px;
-}
-.secret-description {
-  flex: 1;
-  min-width: 0;
+.result-verdict > p:last-child {
+  font-size: 13px;
+  margin: 0;
+  max-width: 550px;
+  margin-inline: auto;
 }
 .result-roles {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 16px;
-  margin: 28px 0;
+  grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+  gap: 12px;
   text-align: left;
+  padding: 24px;
 }
 .result-role {
+  min-width: 0;
+  border: 1px solid #ad93624d;
+  border-radius: 4px;
   overflow: hidden;
-  border: 1px solid #675737;
-  background: #16191f;
+  background: #18212f;
 }
-.result-role img {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 2/3;
-  object-fit: contain;
-}
-.result-role > div {
-  padding: 13px;
-  overflow-wrap: anywhere;
+.result-role > div:not(.portrait-frame) {
+  padding: 12px;
 }
 .result-role strong {
-  font-size: 15px;
-  color: #e9d49b;
+  font-size: 12px;
+  color: #e6d0a2;
+  overflow-wrap: anywhere;
 }
 .result-role p {
-  font-size: 14px;
+  font-size: 11px;
   margin: 7px 0 0;
 }
-@media (max-width: 767px) {
-  .secret {
-    gap: 14px;
-  }
-  .secret-portrait {
-    width: 110px;
-  }
-  .result-roles {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-  }
+.result > button {
+  margin-top: 5px;
 }
-@media (max-width: 380px) {
-  .secret {
-    flex-direction: column;
-  }
-  .secret-portrait {
-    width: 140px;
-    align-self: center;
-  }
+/* 채팅은 높이가 변하는 진입 효과를 적용하지 않습니다. */
+.discourse {
+  padding: 0;
+  position: sticky;
+  top: 20px;
+  align-self: start;
+  min-width: 0;
+  overflow: hidden;
 }
-
-/* 배경음/효과음을 별도로 조절합니다. 모바일에서도 입력 영역을 확보합니다. */
-.sound-controls {
+.tabs {
   display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin-bottom: 24px;
-  padding: 12px 16px;
-  border: 1px solid #423b2b;
-  background: #171a20;
+  border-bottom: 1px solid var(--line);
 }
-.sound-controls label {
-  margin: 0;
-  width: 135px;
-  font-size: 13px;
-}
-.sound-controls input {
-  padding: 0;
-  accent-color: #e9c349;
-  height: 20px;
-  margin-top: 4px;
-}
-/* sender_id 기준 정렬: 같은 닉네임이어도 다른 사람의 메시지는 왼쪽입니다. */
-.messages .chat-message {
-  flex-shrink: 0;
+.tabs button {
+  flex: 1;
   border: 0;
-  padding: 0;
-  max-width: 92%;
+  background: transparent;
+  font-size: 12px;
+  border-radius: 0;
+  padding: 17px 5px;
+  color: #b1b8c5;
+}
+.tabs .active {
+  color: #e8cd96;
+  border-bottom: 2px solid #c2a66a;
+  background: #c2a66a08;
+}
+.messages {
+  height: 580px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #766545 #111923;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow-anchor: none;
+}
+.messages article {
+  flex-shrink: 0;
+  overflow-wrap: anywhere;
+}
+.messages b {
+  font-size: 12px;
+  color: #dbcaab;
+}
+.messages p {
+  font-size: 13px;
+  margin: 7px 0 0;
+}
+.messages .system {
+  font-size: 11px;
+  text-align: center;
+  color: #b2ac9e;
+  margin: 0 0 10px;
+  line-height: 1.9;
+}
+.messages .chat-message {
+  max-width: 93%;
   align-self: flex-start;
   min-width: 0;
 }
@@ -1024,14 +1253,15 @@ footer span {
   text-align: right;
 }
 .chat-message > b {
+  font-size: 10px;
   display: block;
   margin-bottom: 5px;
-  font-size: 13px;
+  color: #b8b9bf;
 }
 .bubble-row {
   display: flex;
   align-items: flex-end;
-  gap: 6px;
+  gap: 5px;
 }
 .mine .bubble-row {
   flex-direction: row-reverse;
@@ -1039,53 +1269,775 @@ footer span {
 .messages .chat-message .bubble {
   margin: 0;
   padding: 10px 12px;
-  background: #30343e;
-  border: 1px solid #444959;
-  border-radius: 3px 12px 12px 12px;
-  color: #eee;
+  background: #293546;
+  border: 1px solid #8192a52e;
+  border-radius: 2px 12px 12px 12px;
+  color: #f0ede6;
   text-align: left;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   min-width: 0;
-  line-height: 1.6;
+  line-height: 1.75;
+  font-size: 13px;
 }
 .messages .chat-message.mine .bubble {
-  background: #e4c25e;
-  color: #241e10;
-  border-color: #e4c25e;
-  border-radius: 12px 3px 12px 12px;
+  background: #cbb180;
+  color: #201b12;
+  border-color: #cbb180;
+  border-radius: 12px 2px 12px 12px;
 }
 .chat-message time {
-  font-size: 12px;
+  font-size: 8px;
   white-space: nowrap;
-  color: #aaa;
+  color: #a5a9b1;
   margin-bottom: 3px;
 }
-.chat-messages {
-  gap: 15px;
+.chat-form {
+  display: flex;
+  gap: 7px;
+  border-top: 1px solid var(--line);
+  padding: 12px;
+}
+.chat-form input {
+  margin: 0;
+  font-size: 16px;
+  padding: 10px;
+  min-width: 0;
+}
+.chat-form button {
+  padding: 9px 12px;
+  font-size: 12px;
+  flex-shrink: 0;
 }
 .new-message {
   display: block;
   margin: 8px auto;
+  font-size: 11px;
+  padding: 8px 16px;
+  min-height: 36px;
+}
+/* 단 하나의 비차단 공개 이벤트 배너 */
+.event-overlay {
+  pointer-events: none;
+  position: fixed;
+  z-index: 10;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100vw - 28px);
+  padding: 20px 30px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border: 1px solid #baa16d99;
+  border-radius: 8px;
+  background: linear-gradient(120deg, #1a2735f5, #0e1724fa);
+  box-shadow: 0 20px 80px #0009;
+}
+.event-overlay > img {
+  width: 60px;
+  height: 72px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.event-overlay .eyebrow {
+  font-size: 8px;
+  margin: 0 0 6px;
+}
+.event-overlay strong {
+  font-size: 20px;
+  color: #ead5ab;
+}
+.event-overlay p:last-child {
+  font-size: 11px;
+  margin: 6px 0 0;
+}
+.event-overlay.red {
+  border-color: #ae6d82;
+}
+.event-overlay.blue {
+  border-color: #7caac9;
+}
+.event-enter-active,
+.event-leave-active {
+  transition:
+    opacity 0.25s,
+    translate 0.25s;
+}
+.event-enter-from,
+.event-leave-to {
+  opacity: 0;
+  translate: 0 14px;
+}
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: #020712df;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(6px);
+}
+.modal {
+  position: relative;
+  width: 480px;
+  max-width: 100%;
+  max-height: 90dvh;
+  overflow: auto;
+  padding: 35px;
+  border-color: #cfaf70;
+  margin: 0;
+  box-shadow: 0 0 80px #b48c3914;
+  background: linear-gradient(140deg, #24303d, #0f1825);
+}
+.modal h2 {
+  font-size: 23px;
+  margin-top: 18px;
+  padding-right: 12px;
+}
+.close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 22px;
+  padding: 5px 12px;
+  border: 0;
+  background: transparent;
+}
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 20px;
+}
+.lobby-settings h3 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.lobby-settings h3 small {
+  font-size: 10px;
+  font-weight: 400;
+}
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 18px;
+}
+.checks label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 13px;
+  min-height: 32px;
+  margin: 8px 0;
+}
+.checks input {
+  width: 18px;
+  margin: 0;
+}
+.lobby-settings > button {
+  font-size: 12px;
+  margin-top: 15px;
+}
+footer {
+  border-top: 1px solid #9c825133;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 25px 4%;
+  color: #b7a67f;
+  font-size: 11px;
+}
+footer span {
+  color: #91979e;
+}
+@keyframes card-reveal {
+  from {
+    opacity: 0;
+    transform: perspective(900px) rotateY(-12deg) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (min-width: 1600px) {
+  .table-area {
+    height: 670px;
+  }
+  .seat {
+    width: 125px;
+  }
+  .table-center h2 {
+    font-size: 24px;
+  }
+  .hero-crest {
+    right: 12%;
+  }
+}
+@media (max-width: 1279px) {
+  .game-layout {
+    grid-template-columns: 1fr;
+  }
+  .discourse {
+    position: static;
+    width: 100%;
+  }
+  .messages {
+    height: 360px;
+  }
+  .table-area {
+    height: 620px;
+  }
+  .lobby-layout {
+    grid-template-columns: minmax(0, 1fr) 280px;
+  }
+  .room-list {
+    grid-template-columns: 1fr;
+  }
+  .profile {
+    display: none;
+  }
+  .intro > .hero-crest {
+    right: 5%;
+    width: 160px;
+    opacity: 0.6;
+  }
+  .intro {
+    padding: 40px;
+  }
+  .roles-grid {
+    gap: 16px;
+  }
+  .role-card > div:not(.portrait-frame) {
+    padding: 16px;
+  }
+  .secret-description {
+    padding-top: 7px;
+  }
 }
 @media (max-width: 767px) {
+  main {
+    padding: 10px 15px 45px;
+  }
+  .top {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .brand {
+    font-size: 22px;
+  }
+  .brand img {
+    width: 34px;
+    height: 42px;
+  }
+  .top nav {
+    width: 100%;
+    gap: 0;
+    border-top: 1px solid #b4a17b26;
+    padding-top: 7px;
+  }
+  .top nav button {
+    flex: 1;
+    padding: 10px 6px;
+    font-size: 12px;
+  }
   .sound-controls {
-    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .sound-controls summary {
+    font-size: 11px;
+  }
+  .intro {
+    min-height: 540px;
+    margin-bottom: 28px;
+    padding: 32px 24px;
+    background-image: url("/assets/remaster/backgrounds/camelot-hall-mobile.webp");
+    background-position: 90% center;
+    align-items: flex-end;
+  }
+  .intro:before {
+    background: linear-gradient(0deg, #080e18f5, #080e18ac 67%, #080e1822);
+  }
+  .intro > div {
+    width: 100%;
+  }
+  .intro > .hero-crest {
+    width: 75px;
+    height: 100px;
+    right: 24px;
+    top: 18px;
+    opacity: 0.8;
+  }
+  .hero-wordmark {
+    font-size: clamp(40px, 12vw, 65px);
+    margin-bottom: 22px;
+    letter-spacing: 0.09em;
+  }
+  .hero-wordmark span {
+    font-size: 8px;
+    letter-spacing: 0.36em;
+  }
+  .intro h1 {
+    font-size: 24px;
+  }
+  .intro p {
+    font-size: 12px;
+  }
+  .hero-actions {
+    gap: 8px;
+    margin: 22px 0;
+  }
+  .hero-actions button {
+    padding: 12px;
+    font-size: 12px;
+    flex: 1;
+  }
+  .tags {
+    gap: 9px;
+  }
+  .tags span {
+    font-size: 9px;
+  }
+  .lobby-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .lobby-layout > aside {
+    order: -1;
+  }
+  .lobby-layout aside .hint {
+    display: none;
+  }
+  .lobby-layout aside > .panel {
+    margin-bottom: 0;
+  }
+  .panel {
+    padding: 20px;
+  }
+  .section-title h2 {
+    font-size: 20px;
+  }
+  .section-title small {
+    display: none;
+  }
+  .section-title button {
+    padding: 8px 10px;
+  }
+  .room-card {
+    padding: 19px 16px;
+  }
+  .room-card small {
+    font-size: 11px;
+  }
+  .game-scene:before {
+    inset: 55px -15px 0;
+    background-size: auto 650px;
+    background-position: 80% 0;
+  }
+  .game-layout {
+    gap: 20px;
+  }
+  .room-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  .room-heading h1 {
+    font-size: 22px;
+  }
+  .room-heading button {
+    font-size: 11px;
+    padding: 9px 12px;
+  }
+  .phase-banner {
+    padding: 16px;
+  }
+  .phase-banner h2 {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .phase-clock {
+    font-size: 20px;
+    min-width: 64px;
+  }
+  .phase-banner > span {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .quest-track {
+    gap: 4px;
+    padding: 17px 5px;
+  }
+  .quest-medallion {
+    width: 39px;
+    height: 39px;
+  }
+  .quest-medallion img {
+    width: 33px;
+    height: 33px;
+  }
+  .quest-medallion b {
+    font-size: 16px;
+  }
+  .quest-track small {
+    font-size: 8px;
+  }
+  .quest-track .threshold {
+    font-size: 8px;
+  }
+  .quest-track > div:not(:last-child):after {
+    top: 20px;
+    left: 87%;
+    width: 27%;
+  }
+  .table-area {
+    height: auto;
+    padding: 15px 12px 20px;
+    overflow: visible;
+  }
+  .table-surface {
+    left: 9%;
+    top: 8px;
+    width: 82%;
+    height: 205px;
+    mask-image: radial-gradient(ellipse, black 35%, transparent 72%);
+  }
+  .table-center {
+    position: relative;
+    inset: auto;
+    transform: none;
+    width: 100%;
+    min-height: 175px;
+    padding: 38px 8px 30px;
+    background: none;
+  }
+  .table-center h2 {
+    font-size: 20px;
+  }
+  .table-center p {
+    font-size: 11px;
+  }
+  .table-hint {
+    font-size: 9px;
+  }
+  .seats {
+    position: relative;
+    inset: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .seat {
+    position: relative;
+    inset: auto;
+    transform: none;
+    width: 100%;
+    min-height: 123px;
+    padding: 12px 8px;
+    gap: 6px;
+  }
+  .seat:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+  .seat b {
+    font-size: 13px;
+  }
+  .seat-top {
+    font-size: 10px;
+  }
+  .seat-state {
+    font-size: 10px;
+  }
+  .avatar-ring {
+    width: 42px;
+    height: 42px;
+  }
+  .lady-tag {
+    font-size: 9px;
+  }
+  .selection-tag {
+    top: -7px;
+  }
+  .actions {
+    padding: 20px 12px;
+    margin-bottom: 18px;
+    scroll-margin-bottom: 15px;
+  }
+  .actions p {
+    font-size: 12px;
+  }
+  .actions button {
+    font-size: 12px;
+    margin: 4px;
     padding: 12px;
   }
-  .sound-controls label {
-    flex: 1;
-    min-width: 90px;
+  .action-phase-vote .blue,
+  .action-phase-vote .red,
+  .action-phase-quest .blue,
+  .action-phase-quest .red {
+    min-width: 0;
+    width: calc(50% - 12px);
+    padding: 14px 7px;
+    min-height: 110px;
   }
-  .sound-controls small {
-    flex-basis: 100%;
+  .action-token {
+    width: 46px;
+    height: 52px;
   }
-  .sound-controls button {
-    font-size: 14px;
-    padding: 10px;
+  .identity {
+    gap: 12px;
+  }
+  .identity-heading {
+    min-width: 120px;
+  }
+  .identity h3 {
+    font-size: 15px;
+  }
+  .identity > button {
+    width: 100%;
+    margin-top: 3px;
+  }
+  .sealed-mini {
+    width: 32px;
+    height: 48px;
+  }
+  .secret {
+    gap: 15px;
+    padding-top: 18px;
+  }
+  .secret > .portrait-frame {
+    width: 115px;
+  }
+  .secret-description p {
+    font-size: 12px;
+  }
+  .identity .muted {
+    font-size: 10px;
+  }
+  .settings-grid {
+    gap: 0 12px;
+  }
+  .settings-grid label {
+    font-size: 12px;
+  }
+  .checks {
+    gap: 0 16px;
+  }
+  .roles-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .role-card > div:not(.portrait-frame) {
+    padding: 13px;
+  }
+  .role-card h2 {
+    font-size: 17px;
+  }
+  .role-card p {
+    font-size: 12px;
+  }
+  .role-card .eyebrow {
+    font-size: 8px;
+    letter-spacing: 0.03em;
+  }
+  .page-heading {
+    padding: 18px 0 22px;
+  }
+  .page-heading h1 {
+    font-size: 25px;
+  }
+  .page-heading p {
+    font-size: 12px;
+  }
+  .rules-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  .rules-grid .panel h2 {
+    font-size: 20px;
+  }
+  .rules-grid .panel p {
+    font-size: 13px;
+  }
+  .result-verdict {
+    min-height: 320px;
+    padding: 35px 20px;
+    background-image:
+      linear-gradient(0deg, #091322f5, #09132266),
+      url("/assets/remaster/results/good-victory-mobile.webp");
+    background-position: right center;
+  }
+  .result.evil .result-verdict {
+    background-image:
+      linear-gradient(0deg, #180f1df5, #180f1d66),
+      url("/assets/remaster/results/evil-victory-mobile.webp");
+  }
+  .result-verdict h1 {
+    font-size: 23px;
+  }
+  .result-roles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding: 16px;
+  }
+  .result-role strong {
+    font-size: 13px;
+  }
+  .result-role p {
+    font-size: 12px;
+  }
+  .messages {
+    height: 340px;
+    padding: 18px 14px;
   }
   .messages .chat-message {
-    max-width: 95%;
+    max-width: 94%;
+  }
+  .messages .chat-message .bubble {
+    font-size: 14px;
+  }
+  .chat-message time {
+    font-size: 9px;
+  }
+  .chat-message > b {
+    font-size: 11px;
+  }
+  .chat-form {
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  .event-overlay {
+    bottom: 15px;
+    padding: 15px 18px;
+    gap: 12px;
+    max-width: calc(100vw - 24px);
+  }
+  .event-overlay > img {
+    width: 40px;
+    height: 50px;
+  }
+  .event-overlay strong {
+    font-size: 15px;
+  }
+  .event-overlay p:last-child {
+    font-size: 10px;
+  }
+  .event-overlay .eyebrow {
+    font-size: 7px;
+  }
+  .modal {
+    padding: 28px 22px;
+  }
+  .modal h2 {
+    font-size: 21px;
+  }
+  .modal-backdrop {
+    padding: 15px;
+  }
+  footer {
+    flex-direction: column;
+    gap: 10px;
+    font-size: 10px;
+  }
+}
+@media (max-width: 380px) {
+  .intro {
+    padding: 27px 18px;
+  }
+  .intro h1 {
+    font-size: 22px;
+  }
+  .tags {
+    gap: 7px;
+  }
+  .tags span {
+    font-size: 8px;
+  }
+  .secret {
+    flex-direction: column;
+  }
+  .secret > .portrait-frame {
+    width: 150px;
+    align-self: center;
+  }
+  .phase-banner h2 {
+    font-size: 14px;
+  }
+  .phase-banner small {
+    font-size: 8px;
+  }
+  .phase-clock {
+    font-size: 18px;
+  }
+  .hero-actions button {
+    font-size: 11px;
+    padding: 10px;
+  }
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+  .event-overlay {
+    width: calc(100vw - 24px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *:before,
+  *:after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  .role-card:hover {
+    transform: none;
+  }
+  .event-enter-from,
+  .event-leave-to {
+    translate: none;
+  }
+}
+/* 태블릿 10인 원탁에서 인접 좌석이 겹치지 않도록 폭을 줄입니다. */
+@media (min-width: 768px) and (max-width: 1000px) {
+  .seat {
+    width: 96px;
+    min-height: 122px;
+    padding: 7px 5px;
+  }
+  .avatar-ring {
+    width: 40px;
+    height: 40px;
+  }
+  .seat b {
+    font-size: 11px;
+  }
+  .seat-top {
+    font-size: 9px;
+  }
+  .seat-state {
+    font-size: 8px;
+  }
+}
+@media (max-width: 767px) {
+  .game-scene:before {
+    background-image:
+      linear-gradient(#080c1477, #080c14f5 900px),
+      url("/assets/remaster/backgrounds/council-chamber-mobile.webp");
+  }
+  .scene-assassination:before {
+    background-image:
+      linear-gradient(#140b1488, #080c14f5 900px),
+      url("/assets/remaster/backgrounds/assassination-mobile.webp");
+  }
+  .scene-lady:before {
+    background-image:
+      linear-gradient(#08142388, #080c14f5 900px),
+      url("/assets/remaster/backgrounds/lake-mobile.webp");
   }
 }

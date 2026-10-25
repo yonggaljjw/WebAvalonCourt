@@ -10,13 +10,17 @@ import { questTeams, rules } from "../constants/game.js";
     <p>5–10명 · 선과 악의 정체를 숨긴 원정</p>
   </section>
   <div class="rules-grid">
-    <section v-for="(rule, index) in rules" :key="index" class="panel">
+    <section
+      v-for="(rule, index) in rules"
+      :key="index"
+      class="panel parchment-panel"
+    >
       <span class="eyebrow">0{{ index + 1 }}</span>
       <h2>{{ rule[0] }}</h2>
       <p>{{ rule[1] }}</p>
     </section>
   </div>
-  <section class="panel">
+  <section class="panel parchment-panel">
     <h2>인원별 원정 구성</h2>
     <div class="table-scroll">
       <table>

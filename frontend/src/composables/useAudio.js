@@ -3,9 +3,13 @@
 import { onMounted, onUnmounted, ref, watch } from "vue";
 import { AvalonAudio, transitionCue } from "../audio.js";
 
-export function useAudio(room, connection, error) {
-  // 실제 오실레이터/게인 노드 생성은 AvalonAudio 클래스가 담당합니다.
+export function useAudio(room, connection) {
+  // 파일 로딩·오디오 노드·대체음은 AvalonAudio 클래스가 담당합니다.
   const sound = new AvalonAudio();
+  const audioWarning = ref("");
+  sound.onWarning = (message) => {
+    audioWarning.value = message;
+  };
 
   // 화면의 사운드 컨트롤과 양방향으로 연결되는 반응형 상태입니다.
   const soundOn = ref(false);
@@ -18,8 +22,12 @@ export function useAudio(room, connection, error) {
   // 사용자가 이전에 저장한 볼륨이 있으면 localStorage에서 복구합니다.
   try {
     const saved = JSON.parse(localStorage.getItem("avalon_audio") || "{}");
-    musicVolume.value = saved.music ?? 25;
-    effectVolume.value = saved.effects ?? 50;
+    musicVolume.value = Number.isFinite(saved.music)
+      ? Math.max(0, Math.min(100, saved.music))
+      : 25;
+    effectVolume.value = Number.isFinite(saved.effects)
+      ? Math.max(0, Math.min(100, saved.effects))
+      : 50;
   } catch {
     // localStorage가 차단되거나 JSON이 깨진 경우 기본값을 그대로 사용합니다.
   }
@@ -41,7 +49,10 @@ export function useAudio(room, connection, error) {
     }
   }
 
+  let toggling = false;
   async function toggleSound() {
+    if (toggling) return;
+    toggling = true;
     try {
       if (soundOn.value) {
         sound.disable();
@@ -55,7 +66,9 @@ export function useAudio(room, connection, error) {
         sound.cue("resume");
       }
     } catch (e) {
-      error.value = e.message;
+      audioWarning.value = e.message;
+    } finally {
+      toggling = false;
     }
   }
 
@@ -86,14 +99,32 @@ export function useAudio(room, connection, error) {
     sound.visibility();
   }
 
-  onMounted(() => document.addEventListener("visibilitychange", visibility));
+  function localClick(event) {
+    const target = event.target.closest?.("button");
+    if (!target || target.disabled || target.closest(".sound-controls")) return;
+    const text = target.textContent || "";
+    const cue = /나의 역할 확인/.test(text)
+      ? "lady"
+      : /준비/.test(text)
+        ? "resume"
+        : /제출|찬성|반대|성공|실패/.test(text)
+          ? "vote"
+          : "click";
+    sound.cue(cue);
+  }
+  onMounted(() => {
+    document.addEventListener("visibilitychange", visibility);
+    document.addEventListener("click", localClick, true);
+  });
 
   onUnmounted(() => {
     document.removeEventListener("visibilitychange", visibility);
+    document.removeEventListener("click", localClick, true);
     sound.close();
   });
 
   return {
+    audioWarning,
     soundOn,
     musicVolume,
     effectVolume,

@@ -11,3 +11,7 @@ Vue Composition API에서 `useSomething()` 형태로 상태와 함수를 묶은 
 `audio.js`의 저수준 Web Audio 코드를 Vue의 `ref/watch/lifecycle`과 연결합니다. 방 단계가 바뀌면 음악 장면을 바꾸고 효과음을 재생합니다.
 
 컴포넌트에서 네트워크나 오디오 구현 세부사항을 제거해 화면 코드를 읽기 쉽게 만드는 것이 목적입니다.
+
+## 오디오에서 따라 읽을 흐름
+
+소리 버튼 → App.vue → useAudio.toggleSound() → AvalonAudio.enable() 순으로 사용자 제스처를 전달합니다. room watcher는 scene()과 transitionCue()를 호출합니다. 오디오 파일 경로·캐시·페이드는 audio.js가 책임지며, Vue 이벤트 리스너와 unmount 시 close() 연결은 useAudio.js가 책임집니다. 볼륨은 localStorage에 저장하지만 새로고침 뒤에는 다시 소리를 켜야 합니다.
